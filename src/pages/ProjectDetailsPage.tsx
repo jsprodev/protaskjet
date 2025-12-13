@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
 import { X, SquarePen, CalendarClock, Trash2, CalendarIcon } from 'lucide-react'
 import type { Project } from '@/types/database.types'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { projectsApi } from '@/services/api/projects.api'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -17,22 +17,31 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createProjectSchema, type CreateProjectInput } from '@/schemas/project.schema'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
-import { format, parseISO } from 'date-fns' // ← ADD THIS IMPORT
+import { format, parseISO } from 'date-fns'
+import { useProjects } from '@/context/ProjectsContext'
+import { toast } from 'sonner'
+import { AlertDialogBox } from '@/components/common/AlertDialogBox'
+import { useTasks } from '@/context/TasksContext'
 
 export const ProjectDetailsPage = () => {
-  const [openStartDate, setOpenStartDate] = useState(false)
-  const [openEndDate, setOpenEndDate] = useState(false)
-
-  // ✅ ADD: State for date objects
   const [startDate, setStartDate] = useState<Date | undefined>()
   const [endDate, setEndDate] = useState<Date | undefined>()
-
+  const [startDatePopover, setStartDatePopover] = useState(false)
+  const [endDatePopover, setEndDatePopover] = useState(false)
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+  const { updateProjects, deleteProject } = useProjects()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
+  const [openDrawer, setOpenDrawer] = useState<boolean>(true)
+  const location = useLocation()
+  const [directEditProject, setDirectEditProject] = useState<boolean>(
+    location.state?.directEditProject ? location.state.directEditProject : false
+  )
+  const { loadTasks } = useTasks()
 
   const {
     register,
@@ -78,7 +87,10 @@ export const ProjectDetailsPage = () => {
   }, [id])
 
   const handleClose = () => {
-    navigate('/projects')
+    setOpenDrawer(false)
+    setTimeout(() => {
+      navigate('/projects')
+    }, 300)
   }
 
   const handleEdit = () => {
@@ -86,6 +98,11 @@ export const ProjectDetailsPage = () => {
   }
 
   const handleCancelEdit = () => {
+    if (directEditProject) {
+      setDirectEditProject(false)
+      handleClose()
+      // navigate('/projects')
+    }
     setIsEditing(false)
     setServerError(null)
 
@@ -114,14 +131,14 @@ export const ProjectDetailsPage = () => {
     try {
       const cleanData = {
         ...data,
-        start_date: data.start_date || null,
-        end_date: data.end_date || null,
-        description: data.description || null,
       }
 
       const updatedProject = await projectsApi.update(project.id, cleanData)
+      updateProjects(updatedProject)
       setProject(updatedProject)
+      toast.success('Project updated successfully.')
       setIsEditing(false)
+      setDirectEditProject(false)
       console.log('✅ Project updated:', updatedProject)
     } catch (error) {
       console.error('❌ Error updating project:', error)
@@ -130,15 +147,19 @@ export const ProjectDetailsPage = () => {
   }
 
   const handleDelete = async () => {
+    console.log('fired')
     if (!project) return
-
-    if (!confirm(`Are you sure you want to delete "${project.name}"?`)) return
-
+    setDeleteDialogOpen(false)
     try {
       await projectsApi.delete(project.id)
-      navigate('/projects')
-    } catch (error) {
-      alert('Failed to delete project')
+      deleteProject(project.id)
+      handleClose()
+      // navigate('/projects')
+      toast.success('Project deleted successfully.')
+      loadTasks()
+    } catch (err) {
+      toast.dismiss(err instanceof Error ? err.message : 'Failed to delete project')
+      throw new Error(err instanceof Error ? err.message : 'Failed to delete project')
     }
   }
 
@@ -158,307 +179,316 @@ export const ProjectDetailsPage = () => {
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDate(date)
     setValue('start_date', formatDateForDB(date))
-    setOpenStartDate(false)
+    setStartDatePopover(false)
   }
 
   const handleEndDateSelect = (date: Date | undefined) => {
     setEndDate(date)
     setValue('end_date', formatDateForDB(date))
-    setOpenEndDate(false)
+    setEndDatePopover(false)
   }
 
   return (
-    <Drawer direction="right" open={true} onOpenChange={(open) => !open && handleClose()}>
-      <DrawerContent className="md:max-w-[70%]! lg:max-w-[50%]!">
-        <DrawerHeader className="p-0">
-          <div className="bg-accent flex items-center justify-between p-2">
-            <DrawerTitle className="text-lg font-semibold">
-              {isEditing ? 'Edit Project' : 'Project Details'}
-            </DrawerTitle>
-            <div className="flex gap-2">
-              <DrawerClose asChild onClick={handleClose}>
-                <Button variant="ghost" size="icon" className="hover:bg-red-500 hover:text-white">
-                  <X className="h-4 w-4" />
-                </Button>
-              </DrawerClose>
+    <>
+      <AlertDialogBox
+        open={deleteDialogOpen}
+        setOpen={setDeleteDialogOpen}
+        handleConfirm={handleDelete}
+        description="This action cannot be undone. This will permanently delete your project and associated tasks."
+      />
+      <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
+        <DrawerContent className="md:max-w-[60%]! lg:max-w-[40%]!">
+          <DrawerHeader className="p-0">
+            <div className="bg-accent flex items-center justify-between p-2">
+              <DrawerTitle className="text-lg font-semibold">
+                {isEditing || directEditProject ? 'Edit Project' : 'Project Details'}
+              </DrawerTitle>
+              <div className="flex gap-2">
+                <DrawerClose asChild onClick={handleClose}>
+                  <Button variant="ghost" size="icon" className="hover:bg-red-500 hover:text-white">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </DrawerClose>
+              </div>
             </div>
-          </div>
-        </DrawerHeader>
+          </DrawerHeader>
 
-        {!loading ? (
-          <>
-            {!isEditing ? (
-              <>
-                {/* VIEW MODE */}
-                <div className="h-[calc(100vh-130px)] space-y-5! overflow-y-auto p-4">
-                  <Field>
-                    <FieldSet>
-                      <FieldLegend className="text-foreground mb-2">Project Name</FieldLegend>
-                      <FieldDescription className="text-foreground flex items-baseline justify-between">
-                        {project?.name}
-                        <span
-                          className={`ml-5 flex rounded-full px-2 py-1.5 text-xs/2 ${
-                            project?.status === 'active'
-                              ? 'bg-blue-100 text-blue-700'
-                              : project?.status === 'completed'
-                                ? 'bg-green-100 text-green-700'
-                                : project?.status === 'on-hold'
-                                  ? 'bg-yellow-100 text-yellow-700'
-                                  : 'bg-gray-200 text-gray-700'
-                          }`}
+          {!loading ? (
+            <>
+              {!isEditing && !directEditProject ? (
+                <>
+                  {/* VIEW MODE */}
+                  <div className="relative h-[calc(100vh-130px)] space-y-5! overflow-y-auto p-4">
+                    <Field>
+                      <FieldSet>
+                        <FieldLegend className="text-foreground mb-2">Project Name</FieldLegend>
+                        <FieldDescription className="text-foreground flex items-baseline justify-between">
+                          {project?.name}
+                          <span
+                            className={`ml-5 flex rounded-full px-2 py-1.5 text-xs/2 ${
+                              project?.status === 'active'
+                                ? 'bg-blue-100 text-blue-700'
+                                : project?.status === 'completed'
+                                  ? 'bg-green-100 text-green-700'
+                                  : project?.status === 'on-hold'
+                                    ? 'bg-yellow-100 text-yellow-700'
+                                    : 'bg-gray-200 text-gray-700'
+                            }`}
+                          >
+                            {project?.status}
+                          </span>
+                        </FieldDescription>
+                      </FieldSet>
+                    </Field>
+                    <Field>
+                      <FieldSet>
+                        <FieldLegend className="text-foreground mb-2">Description</FieldLegend>
+                        <FieldDescription
+                          className={`${project?.description ? 'text-foreground' : 'text-muted-foreground'}`}
                         >
-                          {project?.status}
-                        </span>
-                      </FieldDescription>
-                    </FieldSet>
-                  </Field>
+                          {project?.description || 'No description'}
+                        </FieldDescription>
+                      </FieldSet>
+                    </Field>
+                    <div className="flex gap-4">
+                      <Field>
+                        <FieldSet>
+                          <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
+                            <CalendarIcon size={16} className="mr-1" />
+                            Start Date
+                          </FieldLegend>
+                          <FieldDescription
+                            className={`${project?.start_date ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {project?.start_date ? new Date(project.start_date).toLocaleDateString() : 'No start date'}
+                          </FieldDescription>
+                        </FieldSet>
+                      </Field>
+                      <Field>
+                        <FieldSet>
+                          <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
+                            <CalendarIcon size={16} className="mr-1" />
+                            End Date
+                          </FieldLegend>
+                          <FieldDescription
+                            className={`${project?.end_date ? 'text-foreground' : 'text-muted-foreground'}`}
+                          >
+                            {project?.end_date ? new Date(project.end_date).toLocaleDateString() : 'No end date'}
+                          </FieldDescription>
+                        </FieldSet>
+                      </Field>
+                    </div>
+                    <Field>
+                      <FieldSet>
+                        <FieldLegend className="text-foreground mb-2">Tasks</FieldLegend>
+                        <FieldDescription className="text-foreground text-justify">No tasks yet</FieldDescription>
+                      </FieldSet>
+                    </Field>
+                    <Field>
+                      <FieldSet>
+                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
+                          <CalendarClock size={16} className="mr-1" />
+                          Created At
+                        </FieldLegend>
+                        <FieldDescription className="text-foreground">
+                          {project?.created_at && new Date(project.created_at).toLocaleString()}
+                        </FieldDescription>
+                      </FieldSet>
+                    </Field>
+                  </div>
 
-                  <Field>
-                    <FieldSet>
-                      <FieldLegend className="text-foreground mb-2">Description</FieldLegend>
-                      <FieldDescription
-                        className={`${project?.description ? 'text-foreground' : 'text-muted-foreground'}`}
+                  <DrawerFooter className="border-t">
+                    <div className="flex items-center justify-end gap-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setDeleteDialogOpen(true)}
+                        size={'lg'}
+                        className="flex-1 border-red-200"
                       >
-                        {project?.description || 'No description'}
-                      </FieldDescription>
-                    </FieldSet>
-                  </Field>
+                        <Trash2 />
+                        Delete Project
+                      </Button>
+                      <Button onClick={handleEdit} variant={'outline'} size={'lg'} className="flex-1">
+                        <SquarePen />
+                        Edit Project
+                      </Button>
+                    </div>
+                  </DrawerFooter>
+                </>
+              ) : (
+                /* EDIT MODE */
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <div className="h-[calc(100vh-130px)] space-y-4 overflow-y-auto p-4">
+                    {/* Server Error */}
+                    {serverError && (
+                      <Alert variant="destructive">
+                        <AlertDescription>{serverError}</AlertDescription>
+                      </Alert>
+                    )}
 
-                  <div className="flex gap-4">
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                          <CalendarIcon size={16} className="mr-1" />
+                    {/* Project Name */}
+                    <div className="space-y-2">
+                      <Label htmlFor="name">
+                        Project Name <span className="text-red-500">*</span>
+                      </Label>
+                      <Input
+                        {...register('name')}
+                        id="name"
+                        placeholder="Project name"
+                        className={errors.name ? 'border-red-500' : ''}
+                        disabled={isSubmitting}
+                      />
+                      {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        {...register('description')}
+                        id="description"
+                        placeholder="Project description"
+                        rows={4}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+
+                    {/* Status */}
+                    <div className="space-y-2">
+                      <Label htmlFor="status">Status</Label>
+                      <Select
+                        defaultValue={project?.status}
+                        onValueChange={(value) => setValue('status', value as any)}
+                        disabled={isSubmitting}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="on-hold">On Hold</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="archived">Archived</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* ✅ FIXED: Dates with proper handling */}
+                    <div className="flex justify-between gap-4">
+                      {/* Start Date */}
+                      <div className="flex-1">
+                        <Label htmlFor="start_date" className="mb-2">
                           Start Date
-                        </FieldLegend>
-                        <FieldDescription
-                          className={`${project?.start_date ? 'text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {project?.start_date ? new Date(project.start_date).toLocaleDateString() : 'No start date'}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                          <CalendarIcon size={16} className="mr-1" />
+                        </Label>
+                        <div className="relative flex">
+                          <Input
+                            value={formatDateForDisplay(startDate)} // ← Display in locale format
+                            placeholder="dd/mm/yyyy"
+                            disabled={isSubmitting}
+                            readOnly
+                          />
+                          {/* Hidden input for form */}
+                          <input type="hidden" {...register('start_date')} />
+
+                          <Popover open={startDatePopover} onOpenChange={setStartDatePopover}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size={'icon'}
+                                className="absolute top-1/2 right-2 -translate-y-1/2"
+                                disabled={isSubmitting}
+                              >
+                                <CalendarIcon className="size-4" />
+                                <span className="sr-only">Select date</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <Calendar
+                                mode="single"
+                                selected={startDate}
+                                onSelect={handleStartDateSelect}
+                                captionLayout="dropdown"
+                                disabled={isSubmitting}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                      </div>
+
+                      {/* End Date */}
+                      <div className="flex-1">
+                        <Label htmlFor="end_date" className="mb-2">
                           End Date
-                        </FieldLegend>
-                        <FieldDescription
-                          className={`${project?.end_date ? 'text-foreground' : 'text-muted-foreground'}`}
-                        >
-                          {project?.end_date ? new Date(project.end_date).toLocaleDateString() : 'No end date'}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-                  </div>
+                        </Label>
+                        <div className="relative flex">
+                          <Input
+                            value={formatDateForDisplay(endDate)} // ← Display in locale format
+                            placeholder="dd/mm/yyyy"
+                            disabled={isSubmitting}
+                            readOnly
+                          />
+                          {/* Hidden input for form */}
+                          <input type="hidden" {...register('end_date')} />
 
-                  <Field>
-                    <FieldSet>
-                      <FieldLegend className="text-foreground mb-2">Tasks</FieldLegend>
-                      <FieldDescription className="text-foreground text-justify">No tasks yet</FieldDescription>
-                    </FieldSet>
-                  </Field>
-
-                  <Field>
-                    <FieldSet>
-                      <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                        <CalendarClock size={16} className="mr-1" />
-                        Created At
-                      </FieldLegend>
-                      <FieldDescription className="text-foreground">
-                        {project?.created_at && new Date(project.created_at).toLocaleString()}
-                      </FieldDescription>
-                    </FieldSet>
-                  </Field>
-                </div>
-
-                <DrawerFooter className="border-t">
-                  <div className="flex items-center justify-end gap-4">
-                    <Button variant="outline" onClick={handleDelete} size={'lg'} className="flex-1 border-red-200">
-                      <Trash2 />
-                      Delete
-                    </Button>
-                    <Button onClick={handleEdit} variant={'outline'} size={'lg'} className="flex-1">
-                      <SquarePen />
-                      Edit Project
-                    </Button>
-                  </div>
-                </DrawerFooter>
-              </>
-            ) : (
-              /* EDIT MODE */
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="h-[calc(100vh-130px)] space-y-4 overflow-y-auto p-4">
-                  {/* Server Error */}
-                  {serverError && (
-                    <Alert variant="destructive">
-                      <AlertDescription>{serverError}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  {/* Project Name */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name">
-                      Project Name <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                      {...register('name')}
-                      id="name"
-                      placeholder="Project name"
-                      className={errors.name ? 'border-red-500' : ''}
-                      disabled={isSubmitting}
-                    />
-                    {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-                  </div>
-
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      {...register('description')}
-                      id="description"
-                      placeholder="Project description"
-                      rows={4}
-                      disabled={isSubmitting}
-                    />
-                  </div>
-
-                  {/* Status */}
-                  <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Select
-                      defaultValue={project?.status}
-                      onValueChange={(value) => setValue('status', value as any)}
-                      disabled={isSubmitting}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="on-hold">On Hold</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* ✅ FIXED: Dates with proper handling */}
-                  <div className="flex justify-between gap-4">
-                    {/* Start Date */}
-                    <div className="flex-1">
-                      <Label htmlFor="start_date" className="mb-2">
-                        Start Date
-                      </Label>
-                      <div className="relative flex">
-                        <Input
-                          value={formatDateForDisplay(startDate)} // ← Display in locale format
-                          placeholder="mm/dd/yyyy"
-                          disabled={isSubmitting}
-                          readOnly
-                        />
-                        {/* Hidden input for form */}
-                        <input type="hidden" {...register('start_date')} />
-
-                        <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size={'icon'}
-                              className="absolute top-1/2 right-2 -translate-y-1/2"
-                              disabled={isSubmitting}
-                            >
-                              <CalendarIcon className="size-4" />
-                              <span className="sr-only">Select date</span>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <Calendar
-                              mode="single"
-                              selected={startDate}
-                              onSelect={handleStartDateSelect}
-                              captionLayout="dropdown"
-                              disabled={isSubmitting}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                    </div>
-
-                    {/* End Date */}
-                    <div className="flex-1">
-                      <Label htmlFor="end_date" className="mb-2">
-                        End Date
-                      </Label>
-                      <div className="relative flex">
-                        <Input
-                          value={formatDateForDisplay(endDate)} // ← Display in locale format
-                          placeholder="mm/dd/yyyy"
-                          disabled={isSubmitting}
-                          readOnly
-                        />
-                        {/* Hidden input for form */}
-                        <input type="hidden" {...register('end_date')} />
-
-                        <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size={'icon'}
-                              className="absolute top-1/2 right-2 -translate-y-1/2"
-                              disabled={isSubmitting}
-                            >
-                              <CalendarIcon className="size-4" />
-                              <span className="sr-only">Select date</span>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <Calendar
-                              mode="single"
-                              selected={endDate}
-                              onSelect={handleEndDateSelect}
-                              captionLayout="dropdown"
-                              disabled={isSubmitting}
-                            />
-                          </PopoverContent>
-                        </Popover>
+                          <Popover open={endDatePopover} onOpenChange={setEndDatePopover}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size={'icon'}
+                                className="absolute top-1/2 right-2 -translate-y-1/2"
+                                disabled={isSubmitting}
+                              >
+                                <CalendarIcon className="size-4" />
+                                <span className="sr-only">Select date</span>
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <Calendar
+                                mode="single"
+                                selected={endDate}
+                                onSelect={handleEndDateSelect}
+                                captionLayout="dropdown"
+                                disabled={isSubmitting}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <DrawerFooter className="border-t pt-4">
-                  <div className="flex gap-2">
-                    <Button
-                      size={'lg'}
-                      type="button"
-                      variant="outline"
-                      onClick={handleCancelEdit}
-                      disabled={isSubmitting}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      size={'lg'}
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700"
-                    >
-                      {isSubmitting ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                  </div>
-                </DrawerFooter>
-              </form>
-            )}
-          </>
-        ) : (
-          <Loader />
-        )}
-      </DrawerContent>
-    </Drawer>
+                  <DrawerFooter className="border-t pt-4">
+                    <div className="flex gap-2">
+                      <Button
+                        size={'lg'}
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancelEdit}
+                        disabled={isSubmitting}
+                        className="flex-1"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size={'lg'}
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                      >
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                    </div>
+                  </DrawerFooter>
+                </form>
+              )}
+            </>
+          ) : (
+            <Loader />
+          )}
+        </DrawerContent>
+      </Drawer>
+    </>
   )
 }

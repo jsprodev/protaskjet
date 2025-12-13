@@ -14,22 +14,30 @@ import { projectsApi } from '@/services/api/projects.api'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { format } from 'date-fns'
+import { toast } from 'sonner'
+import { useProjects } from '@/context/ProjectsContext'
+import { useModal } from '@/context/ModalContext'
 
-export const CreateProjectForm = () => {
+type CreateProjectFormProps = {
+  onSuccess?: () => void // ← Add callback prop
+}
+
+export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
+  const { addProject } = useProjects()
   const [openStartDate, setOpenStartDate] = useState(false)
   const [openEndDate, setOpenEndDate] = useState(false)
   const [startDate, setStartDate] = useState<Date | undefined>()
   const [endDate, setEndDate] = useState<Date | undefined>()
-
-  const navigate = useNavigate()
   const [serverError, setServerError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const { closeModal } = useModal()
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setValue,
-    watch,
+    reset,
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
@@ -43,13 +51,15 @@ export const CreateProjectForm = () => {
 
   const onSubmit = async (data: CreateProjectInput) => {
     setServerError(null)
-
     try {
       const project = await projectsApi.create(data)
-      console.log('✅ Project created:', project)
+      addProject(project) // Update context
+      reset() // Reset form
+      toast.success('Project created successfully!')
+      // onSuccess?.() // close modal
+      closeModal()
       navigate('/projects')
     } catch (error) {
-      console.error('❌ Error creating project:', error)
       setServerError(error instanceof Error ? error.message : 'Failed to create project')
     }
   }
@@ -223,7 +233,7 @@ export const CreateProjectForm = () => {
 
       {/* Actions */}
       <div className="flex gap-3">
-        <Button type="button" variant="outline" onClick={() => navigate(-1)} disabled={isSubmitting} className="flex-1">
+        <Button type="button" variant="outline" onClick={onSuccess} disabled={isSubmitting} className="flex-1">
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting} className="flex-3 bg-blue-600 hover:bg-blue-700">

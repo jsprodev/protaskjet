@@ -37,9 +37,31 @@ export type Task = {
 
 // With relations
 export type TaskWithDetails = Task & {
-  project: Pick<Project, 'id' | 'name'>
-  assigned_user: Pick<User, 'id' | 'name' | 'email'> | null
-  created_by_user: Pick<User, 'id' | 'name'>
+  projects:
+    | {
+        id: string
+        name: string
+      }[]
+    | {
+        id: string
+        name: string
+      }
+  users:
+    | {
+        id: string
+        name: string
+        email: string
+        avatar_url: string | null
+        role: string
+      }[]
+    | {
+        id: string
+        name: string
+        email: string
+        avatar_url: string | null
+        role: string
+      }
+    | null
 }
 
 export type ProjectWithStats = Project & {

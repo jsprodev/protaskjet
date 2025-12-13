@@ -58,7 +58,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
                     to={item.url}
                     className={({ isActive }) => (isActive ? '[&>*]:bg-sidebar-accent font-medium' : '')}
                   >
-                    <SidebarMenuButton tooltip={item.title}>
+                    <SidebarMenuButton tooltip={item.title} className="cursor-pointer">
                       <item.icon />
                       <span>{item.title}</span>
                     </SidebarMenuButton>

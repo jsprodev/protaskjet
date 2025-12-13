@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import { Header } from '@/components/layout/Header'
 import { AppSidebar } from '@/components/layout/Sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { Toaster } from '@/components/ui/sonner'
+import { GlobalModal } from '@/components/layout/GlobalModal'
 
 export const ProtectedLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -9,8 +11,10 @@ export const ProtectedLayout = ({ children }: { children: ReactNode }) => {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <div className="p-5">{children}</div>
+        <div className="p-8 max-md:p-6">{children}</div>
       </SidebarInset>
+      <Toaster position="top-right" closeButton={true} dir="ltr" duration={5000} className="toast" />
+      <GlobalModal />
     </SidebarProvider>
   )
 }

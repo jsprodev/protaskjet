@@ -48,14 +48,6 @@ export const projectsApi = {
     return data as Project
   },
 
-  // Update project
-  // update: async (id: string, updates: Partial<CreateProjectInput>) => {
-  //   const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select().single()
-
-  //   if (error) throw error
-  //   return data as Project
-  // },
-
   update: async (id: string, updates: Partial<CreateProjectInput>) => {
     const cleanData = {
       name: updates.name,
@@ -78,3 +70,11 @@ export const projectsApi = {
     if (error) throw error
   },
 }
+
+// Update project
+// update: async (id: string, updates: Partial<CreateProjectInput>) => {
+//   const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select().single()
+
+//   if (error) throw error
+//   return data as Project
+// },
