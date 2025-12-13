@@ -1,69 +1,102 @@
-# React + TypeScript + Vite
+# Project Management Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern **Project Management Web Application** built with **React, TypeScript, and Vite**, designed to help teams and individuals efficiently manage projects, tasks, users, and track progress through a centralized dashboard.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Overview
 
-## Expanding the ESLint configuration
+This application provides a structured workflow system with four core modules:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Projects** – Create, organize, and manage projects
+* **Tasks** – Assign, track, and update tasks within projects
+* **Users** – Manage users, roles, and access
+* **Dashboard** – Get a high-level overview of project status, task progress, and key metrics
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The app focuses on clean UI, scalability, and productivity, making it suitable for real-world team collaboration scenarios.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🧩 Core Modules
+
+### 📁 Projects
+
+* Create and manage multiple projects
+* View project details and status
+* Organize tasks under specific projects
+
+### ✅ Tasks
+
+* Create, assign, and update tasks
+* Track task status and progress
+* Associate tasks with projects and users
+
+### 👤 Users
+
+* Manage application users
+* Assign roles or responsibilities
+* Control access to projects and tasks
+
+### 📊 Dashboard
+
+* Overview of ongoing projects and tasks
+* Visual indicators for progress and activity
+* Centralized insights for quick decision-making
+
+---
+
+## 🛠 Tech Stack
+
+* **React** – UI library
+* **TypeScript** – Type safety and maintainability
+* **Vite** – Fast build tool and development server
+* **ESLint** – Code quality and linting
+
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+
+* Node.js (v18 or later recommended)
+* npm or yarn
+
+### Installation
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run in Development Mode
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+---
+
+## 🧪 Linting
+
+Run ESLint to check code quality:
+
+```bash
+npm run lint
+```
+
+---
+
+## 📌 Notes
+
+This project was bootstrapped using the **React + TypeScript + Vite** template and extended to support a modular, scalable application structure suitable for production use.
+
+---
+
+## 📄 License
+
+This project is for learning, portfolio, and demonstration purposes.
