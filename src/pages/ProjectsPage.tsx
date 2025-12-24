@@ -1,17 +1,5 @@
 import { Link, Outlet } from 'react-router-dom'
-import {
-  Plus,
-  FolderKanban,
-  Calendar,
-  Eye,
-  Pencil,
-  Trash2,
-  KanbanIcon,
-  KanbanSquareIcon,
-  KanbanSquareDashed,
-  KanbanSquareDashedIcon,
-  LucideKanbanSquareDashed,
-} from 'lucide-react'
+import { Plus, FolderKanban, Calendar, Eye, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Field, FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field'

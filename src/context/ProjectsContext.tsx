@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { type Project } from '@/types/database.types'
 import { projectsApi } from '@/services/api/projects.api'

@@ -126,6 +126,6 @@
   }
 }
 
-/* .toast li {
-  direction: ltr;
-} */
+button {
+  cursor: pointer;
+}

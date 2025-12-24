@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '../ui/button'
 
-interface AlertDialogBoxProps {
+type AlertDialogBoxProps = {
   open: boolean
   setOpen: (value: boolean) => void
   title?: string

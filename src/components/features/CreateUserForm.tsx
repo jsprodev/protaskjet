@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { Loader2, AlertCircleIcon } from 'lucide-react'
+import { Loader2, AlertCircleIcon, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -18,6 +18,7 @@ type CreateUserFormProps = {
 
 export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const { closeModal } = useModal()
 
   const {
@@ -26,21 +27,53 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
     formState: { errors, isSubmitting },
     setValue,
     reset,
+    watch,
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       email: '',
       name: '',
-      avatar_url: '',
       role: 'user',
     },
   })
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file
+      if (file.size > 5 * 1024 * 1024) {
+        setServerError('File size must be less than 5MB')
+        return
+      }
+      if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
+        setServerError('Only image files are allowed')
+        return
+      }
+
+      // Update form
+      setValue('avatar', file)
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+      setServerError(null)
+    }
+  }
+
+  const clearAvatar = () => {
+    setValue('avatar', undefined)
+    setAvatarPreview(null)
+  }
 
   const onSubmit = async (data: CreateUserInput) => {
     setServerError(null)
     try {
       await usersApi.create(data)
       reset()
+      setAvatarPreview(null)
       toast.success('User created successfully!')
       closeModal()
       onSuccess?.()
@@ -90,18 +123,41 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
       </div>
 
-      {/* Avatar URL */}
+      {/* Avatar Upload */}
       <div className="space-y-2">
-        <Label htmlFor="avatar_url">Avatar URL</Label>
-        <Input
-          {...register('avatar_url')}
-          id="avatar_url"
-          type="url"
-          placeholder="https://example.com/avatar.jpg"
-          className={errors.avatar_url ? 'border-red-500' : ''}
-          disabled={isSubmitting}
-        />
-        {errors.avatar_url && <p className="text-sm text-red-500">{errors.avatar_url.message}</p>}
+        <Label htmlFor="avatar">Avatar (Optional)</Label>
+        <div className="flex flex-col gap-3">
+          {/* Preview */}
+          {avatarPreview && (
+            <div className="relative h-20 w-20">
+              <img src={avatarPreview} alt="Avatar preview" className="h-full w-full rounded-lg object-cover" />
+              <button
+                type="button"
+                onClick={clearAvatar}
+                className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
+          {/* File Input */}
+          <div className="flex items-center gap-2">
+            <Input
+              type="file"
+              id="avatar"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              disabled={isSubmitting}
+              className="cursor-pointer"
+            />
+            <Upload className="h-4 w-4 text-gray-400" />
+          </div>
+
+          {/* Help Text */}
+          <p className="text-xs text-gray-500">Max 5MB. Supported formats: JPEG, PNG, GIF, WebP</p>
+        </div>
+        {errors.avatar && <p className="text-sm text-red-500">{errors.avatar.message as string}</p>}
       </div>
 
       {/* Role */}

@@ -42,8 +42,8 @@ const fuzzyFilter: FilterFn<TaskWithDetails> = (row, _columnId, value) => {
       const users = row.original.users as any
       return Array.isArray(users) ? users[0]?.name : users?.name
     })(),
-    row.original.status,
-    row.original.priority,
+    // row.original.status,
+    // row.original.priority,
   ]
     .filter(Boolean)
     .join(' ')
@@ -341,6 +341,11 @@ export const TasksPage = () => {
     return <Loader />
   }
 
+  const onSearch = (value: string) => {
+    // const value = e.target.value
+    setGlobalFilter(value)
+  }
+
   const onStatusChange = (value: string) => {
     table.getColumn('status')?.setFilterValue(value === 'all' ? '' : value)
   }
@@ -349,9 +354,10 @@ export const TasksPage = () => {
     table.getColumn('priority')?.setFilterValue(value === 'all' ? '' : value)
   }
 
-  const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setGlobalFilter(String(value))
+  const handleReset = () => {
+    onStatusChange('all')
+    onPriorityChange('all')
+    onSearch('')
   }
 
   return (
@@ -381,7 +387,7 @@ export const TasksPage = () => {
                 <Input
                   placeholder="title, description, project, assigned to"
                   value={globalFilter}
-                  onChange={onSearch}
+                  onChange={(e) => onSearch(e.target.value)}
                   className=""
                 />
               </Field>
@@ -418,7 +424,7 @@ export const TasksPage = () => {
               </Field>
               <Field className="max-w-[100px] gap-1">
                 <FieldLabel className="invisible">reset filters</FieldLabel>
-                <Button variant={'outline'} size={'default'} className="">
+                <Button variant={'outline'} size={'default'} onClick={handleReset}>
                   Reset Filters
                 </Button>
               </Field>

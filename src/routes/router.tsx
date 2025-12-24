@@ -1,8 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PublicRoute } from './PublicRoute'
-
-// Pages
 import { LoginPage } from '@/pages/LoginPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { DashboardPage } from '@/pages/DashboardPage'
@@ -12,6 +10,9 @@ import { ProjectsPage } from '@/pages/ProjectsPage'
 import { ProjectDetailsPage } from '@/pages/ProjectDetailsPage'
 import { TasksPage } from '@/pages/TasksPage'
 import { TaskDetailsPage } from '@/pages/TaskDetailsPage'
+import { UsersPage } from '@/pages/UsersPage'
+import { ErrorBoundary, RouteErrorElement } from '@/components/ErrorBoundary'
+import { UserDetailsPage } from '@/pages/UserDetailsPage'
 
 export const router = createBrowserRouter([
   {
@@ -20,15 +21,24 @@ export const router = createBrowserRouter([
   },
   // ========== PUBLIC ROUTES ==========
   {
-    element: <PublicRoute />,
+    element: (
+      <ErrorBoundary>
+        <PublicRoute />
+      </ErrorBoundary>
+    ),
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/signup', element: <SignupPage /> },
     ],
+    errorElement: <RouteErrorElement />,
   },
   // ========== PROTECTED ROUTES ==========
   {
-    element: <ProtectedRoute />,
+    element: (
+      <ErrorBoundary>
+        <ProtectedRoute />
+      </ErrorBoundary>
+    ),
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'settings', element: <SettingsPage /> },
@@ -42,8 +52,15 @@ export const router = createBrowserRouter([
         element: <TasksPage />,
         children: [{ path: ':taskId', element: <TaskDetailsPage /> }],
       },
+      {
+        path: 'users',
+        element: <UsersPage />,
+        children: [{ path: ':userId', element: <UserDetailsPage /> }],
+      },
     ],
+    errorElement: <RouteErrorElement />,
   },
   // ========== 404 ==========
-  { path: '*', element: <NotFoundPage /> },
+  // { path: '*', element: <NotFoundPage /> },
+  { path: '*', element: <RouteErrorElement /> },
 ])
