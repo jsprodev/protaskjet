@@ -83,7 +83,7 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       {/* Server Error */}
       {serverError && (
         <Alert variant="destructive">
@@ -94,7 +94,7 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
 
       {/* Email */}
       <div className="space-y-2">
-        <Label htmlFor="email">
+        <Label htmlFor="email" className="text-ui-xs font-medium text-neutral-500">
           Email <span className="text-red-500">*</span>
         </Label>
         <Input
@@ -102,7 +102,7 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
           id="email"
           type="email"
           placeholder="user@example.com"
-          className={errors.email ? 'border-red-500' : ''}
+          className={`bg-white ${errors.email ? 'border-red-500' : ''}`}
           disabled={isSubmitting}
         />
         {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
@@ -110,14 +110,14 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
 
       {/* Full Name */}
       <div className="space-y-2">
-        <Label htmlFor="name">
+        <Label htmlFor="name" className="text-ui-xs font-medium text-neutral-500">
           Full Name <span className="text-red-500">*</span>
         </Label>
         <Input
           {...register('name')}
           id="name"
           placeholder="John Doe"
-          className={errors.name ? 'border-red-500' : ''}
+          className={`bg-white ${errors.name ? 'border-red-500' : ''}`}
           disabled={isSubmitting}
         />
         {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
@@ -125,22 +125,10 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
 
       {/* Avatar Upload */}
       <div className="space-y-2">
-        <Label htmlFor="avatar">Avatar (Optional)</Label>
+        <Label htmlFor="avatar" className="text-ui-xs font-medium text-neutral-500">
+          Avatar (Optional)
+        </Label>
         <div className="flex flex-col gap-3">
-          {/* Preview */}
-          {avatarPreview && (
-            <div className="relative h-20 w-20">
-              <img src={avatarPreview} alt="Avatar preview" className="h-full w-full rounded-lg object-cover" />
-              <button
-                type="button"
-                onClick={clearAvatar}
-                className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
           {/* File Input */}
           <div className="flex items-center gap-2">
             <Input
@@ -149,24 +137,36 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
               accept="image/*"
               onChange={handleAvatarChange}
               disabled={isSubmitting}
-              className="cursor-pointer"
+              className="cursor-pointer bg-white"
             />
-            <Upload className="h-4 w-4 text-gray-400" />
+            <Upload className="size-4" />
           </div>
 
           {/* Help Text */}
-          <p className="text-xs text-gray-500">Max 5MB. Supported formats: JPEG, PNG, GIF, WebP</p>
+          <p className="text-ui-xs text-neutral-400">Max 5MB. Supported formats: JPEG, PNG, GIF, WebP</p>
+          {avatarPreview && (
+            <div className="relative mt-2 h-32 w-32">
+              <img src={avatarPreview} alt="Avatar preview" className="h-full w-full rounded-2xl border object-cover" />
+              <button
+                type="button"
+                onClick={clearAvatar}
+                className="absolute -top-3 -right-3 rounded-full border bg-neutral-100 p-1 text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
         {errors.avatar && <p className="text-sm text-red-500">{errors.avatar.message as string}</p>}
       </div>
 
       {/* Role */}
       <div className="space-y-2">
-        <Label htmlFor="role">
+        <Label htmlFor="role" className="text-ui-xs font-medium text-neutral-500">
           Role <span className="text-red-500">*</span>
         </Label>
         <Select defaultValue="user" onValueChange={(value) => setValue('role', value as any)} disabled={isSubmitting}>
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
           <SelectContent>
@@ -179,10 +179,20 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
 
       {/* Actions */}
       <div className="flex gap-3">
-        <Button type="button" variant="outline" onClick={onSuccess} disabled={isSubmitting} className="flex-1">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onSuccess}
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 hover:bg-neutral-100 active:scale-[0.98]"
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="flex-1 bg-blue-600 hover:bg-blue-700">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
+        >
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Creating...' : 'Create User'}
         </Button>

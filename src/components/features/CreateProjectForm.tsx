@@ -89,7 +89,7 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       {/* Server Error */}
       {serverError && (
         <Alert variant="destructive">
@@ -100,41 +100,46 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
 
       {/* Project Name */}
       <div className="space-y-2">
-        <Label htmlFor="name">
+        <Label htmlFor="name" className="text-ui-xs font-medium text-neutral-500">
           Project Name <span className="text-red-500">*</span>
         </Label>
         <Input
           {...register('name')}
           id="name"
           placeholder="e.g., Website Redesign"
-          className={errors.name ? 'border-red-500' : ''}
           disabled={isSubmitting}
+          className={`bg-white ${errors.name ? 'border-red-500' : ''} `}
         />
-        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+        {errors.name && <p className="text-ui-xs text-red-500">{errors.name.message}</p>}
       </div>
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description" className="text-ui-xs font-medium text-neutral-500">
+          Description
+        </Label>
         <Textarea
           {...register('description')}
           id="description"
           placeholder="Describe your project..."
-          rows={10}
+          rows={6}
           disabled={isSubmitting}
+          className="resize-none bg-white"
         />
-        {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
+        {errors.description && <p className="text-ui-xs text-red-500">{errors.description.message}</p>}
       </div>
 
       {/* Status */}
       <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
+        <Label htmlFor="status" className="text-ui-xs font-medium text-neutral-500">
+          Status
+        </Label>
         <Select
           defaultValue="active"
           onValueChange={(value) => setValue('status', value as any)}
           disabled={isSubmitting}
         >
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Select status" />
           </SelectTrigger>
           <SelectContent>
@@ -146,21 +151,21 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
         </Select>
       </div>
 
-      {/* Date Range - FIXED */}
-      <div className="flex justify-between gap-4">
+      {/* Date Range */}
+      <div className="flex gap-4">
         {/* Start Date */}
-        <div className="flex-1">
-          <Label htmlFor="start_date" className="mb-2">
+        <div className="flex-1 space-y-2">
+          <Label htmlFor="start_date" className="text-ui-xs font-medium text-neutral-500">
             Start Date
           </Label>
-          <div className="relative flex">
+          <div className="relative">
             <Input
-              value={formatDateForDisplay(startDate)} // ← Display in locale format
+              value={formatDateForDisplay(startDate)}
               placeholder="mm/dd/yyyy"
               disabled={isSubmitting}
               readOnly
+              className="bg-white pr-10"
             />
-            {/* Hidden input for form submission */}
             <input type="hidden" {...register('start_date')} />
 
             <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
@@ -169,10 +174,10 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="absolute top-1/2 right-2 -translate-y-1/2"
                   disabled={isSubmitting}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
                 >
-                  <CalendarIcon className="size-4" />
+                  <CalendarIcon className="size-4 text-neutral-500" />
                   <span className="sr-only">Select date</span>
                 </Button>
               </PopoverTrigger>
@@ -190,18 +195,18 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
         </div>
 
         {/* End Date */}
-        <div className="flex-1">
-          <Label htmlFor="end_date" className="mb-2">
+        <div className="flex-1 space-y-2">
+          <Label htmlFor="end_date" className="text-ui-xs font-medium text-neutral-500">
             End Date
           </Label>
-          <div className="relative flex">
+          <div className="relative">
             <Input
-              value={formatDateForDisplay(endDate)} // ← Display in locale format
+              value={formatDateForDisplay(endDate)}
               placeholder="mm/dd/yyyy"
               disabled={isSubmitting}
               readOnly
+              className="bg-white pr-10"
             />
-            {/* Hidden input for form submission */}
             <input type="hidden" {...register('end_date')} />
 
             <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
@@ -210,10 +215,10 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="absolute top-1/2 right-2 -translate-y-1/2"
                   disabled={isSubmitting}
+                  className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
                 >
-                  <CalendarIcon className="size-4" />
+                  <CalendarIcon className="size-4 text-neutral-500" />
                   <span className="sr-only">Select date</span>
                 </Button>
               </PopoverTrigger>
@@ -232,13 +237,24 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3">
-        <Button type="button" variant="outline" onClick={onSuccess} disabled={isSubmitting} className="flex-1">
+      <div className="flex gap-3 pt-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onSuccess}
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 hover:bg-neutral-100 active:scale-[0.98]"
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="flex-3 bg-blue-600 hover:bg-blue-700">
+
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
+        >
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Creating...' : 'Create Project'}
+          {isSubmitting ? 'Creating…' : 'Create Project'}
         </Button>
       </div>
     </form>

@@ -9,7 +9,7 @@ import { AddDropDownMenu } from '../features/AddDropDownMenu'
 export const Header = () => {
   const { session, logout } = useAuth()
   return (
-    <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12s flex h-16 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
+    <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12s flex h-16 shrink-0 items-center gap-2 border-b bg-white transition-[width,height] ease-linear">
       <nav className="flex w-full items-center gap-2 px-4">
         <div className="flex flex-3/4 items-center">
           <SidebarTrigger className="p-4" />

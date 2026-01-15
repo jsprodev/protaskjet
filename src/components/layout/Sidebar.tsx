@@ -47,7 +47,7 @@ export const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) =
     <Sidebar collapsible="icon" {...props}>
       {/* <SidebarHeader>
       </SidebarHeader> */}
-      <SidebarContent>
+      <SidebarContent className="bg-white">
         {/* <LeftNav items={data.navMain} /> */}
         <SidebarGroup>
           <SidebarMenu>

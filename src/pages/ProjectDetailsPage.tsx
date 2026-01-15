@@ -4,9 +4,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Loader } from '@/components/ui/loader'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Field, FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { X, SquarePen, CalendarClock, Trash2, CalendarIcon } from 'lucide-react'
 import type { Project } from '@/types/database.types'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
@@ -38,9 +45,7 @@ export const ProjectDetailsPage = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
   const [openDrawer, setOpenDrawer] = useState<boolean>(true)
   const location = useLocation()
-  const [directEditProject, setDirectEditProject] = useState<boolean>(
-    location.state?.directEditProject ? location.state.directEditProject : false
-  )
+  const [directEditProject, setDirectEditProject] = useState<boolean>(location.state?.directEditProject ?? false)
   const { loadTasks } = useTasks()
 
   const {
@@ -53,19 +58,17 @@ export const ProjectDetailsPage = () => {
     resolver: zodResolver(createProjectSchema),
   })
 
+  // Fetch project by id
   const getProject = async (id: string) => {
     try {
       const data = await projectsApi.getById(id)
       setProject(data)
 
-      // ✅ FIXED: Parse ISO dates from database
       const parsedStartDate = data.start_date ? parseISO(data.start_date) : undefined
       const parsedEndDate = data.end_date ? parseISO(data.end_date) : undefined
-
       setStartDate(parsedStartDate)
       setEndDate(parsedEndDate)
 
-      // Set form values
       reset({
         name: data.name,
         description: data.description || '',
@@ -81,36 +84,27 @@ export const ProjectDetailsPage = () => {
   }
 
   useEffect(() => {
-    if (id) {
-      getProject(id)
-    }
+    if (id) getProject(id)
   }, [id])
 
   const handleClose = () => {
     setOpenDrawer(false)
-    setTimeout(() => {
-      navigate('/projects')
-    }, 300)
+    setTimeout(() => navigate('/projects'), 300)
   }
 
-  const handleEdit = () => {
-    setIsEditing(true)
-  }
+  const handleEdit = () => setIsEditing(true)
 
   const handleCancelEdit = () => {
     if (directEditProject) {
       setDirectEditProject(false)
       handleClose()
-      // navigate('/projects')
     }
     setIsEditing(false)
     setServerError(null)
 
-    // Reset form to original values
     if (project) {
       const parsedStartDate = project.start_date ? parseISO(project.start_date) : undefined
       const parsedEndDate = project.end_date ? parseISO(project.end_date) : undefined
-
       setStartDate(parsedStartDate)
       setEndDate(parsedEndDate)
 
@@ -127,62 +121,47 @@ export const ProjectDetailsPage = () => {
   const onSubmit = async (data: CreateProjectInput) => {
     if (!project) return
     setServerError(null)
-
     try {
-      const cleanData = {
-        ...data,
-      }
-
-      const updatedProject = await projectsApi.update(project.id, cleanData)
+      const updatedProject = await projectsApi.update(project.id, data)
       updateProjects(updatedProject)
       setProject(updatedProject)
       toast.success('Project updated successfully.')
       setIsEditing(false)
       setDirectEditProject(false)
-      console.log('✅ Project updated:', updatedProject)
     } catch (error) {
-      console.error('❌ Error updating project:', error)
       setServerError(error instanceof Error ? error.message : 'Failed to update project')
     }
   }
 
   const handleDelete = async () => {
-    console.log('fired')
     if (!project) return
     setDeleteDialogOpen(false)
     try {
       await projectsApi.delete(project.id)
       deleteProject(project.id)
       handleClose()
-      // navigate('/projects')
       toast.success('Project deleted successfully.')
       loadTasks()
     } catch (err) {
       toast.dismiss(err instanceof Error ? err.message : 'Failed to delete project')
-      throw new Error(err instanceof Error ? err.message : 'Failed to delete project')
     }
   }
 
-  // ✅ FIXED: Format for display (user's locale)
-  const formatDateForDisplay = (date: Date | undefined) => {
-    if (!date) return ''
-    return date.toLocaleDateString()
-  }
-
-  // ✅ FIXED: Format for database (ISO format)
-  const formatDateForDB = (date: Date | undefined) => {
-    if (!date) return ''
-    return format(date, 'yyyy-MM-dd')
-  }
-
-  // ✅ FIXED: Handle date selection
-  const handleStartDateSelect = (date: Date | undefined) => {
+  const formatDateForDisplay = (date?: Date) =>
+    date
+      ? date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      : ''
+  const formatDateForDB = (date?: Date) => (date ? format(date, 'yyyy-MM-dd') : '')
+  const handleStartDateSelect = (date?: Date) => {
     setStartDate(date)
     setValue('start_date', formatDateForDB(date))
     setStartDatePopover(false)
   }
-
-  const handleEndDateSelect = (date: Date | undefined) => {
+  const handleEndDateSelect = (date?: Date) => {
     setEndDate(date)
     setValue('end_date', formatDateForDB(date))
     setEndDatePopover(false)
@@ -196,119 +175,137 @@ export const ProjectDetailsPage = () => {
         handleConfirm={handleDelete}
         description="This action cannot be undone. This will permanently delete your project and associated tasks."
       />
+
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent className="md:max-w-[60%]! lg:max-w-[40%]!">
+        {/* Apple/Linear drawer width */}
+        <DrawerContent
+          aria-description="Project Details"
+          aria-describedby="Project Details"
+          className="w-full! bg-neutral-50 sm:min-w-[30%] md:max-w-[560px] md:min-w-[32%] lg:max-w-[640px] xl:max-w-[720px]"
+        >
+          {/* HEADER */}
           <DrawerHeader className="p-0">
-            <div className="bg-accent flex items-center justify-between p-2">
-              <DrawerTitle className="text-lg font-semibold">
+            <div className="flex items-center justify-between border-b p-3">
+              <DrawerTitle className="text-ui-lg! font-medium text-neutral-900">
                 {isEditing || directEditProject ? 'Edit Project' : 'Project Details'}
               </DrawerTitle>
-              <div className="flex gap-2">
-                <DrawerClose asChild onClick={handleClose}>
-                  <Button variant="ghost" size="icon" className="hover:bg-red-500 hover:text-white">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DrawerClose>
-              </div>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-neutral-200 hover:text-neutral-900">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+              <DrawerDescription className="sr-only">View or edit project information</DrawerDescription>
             </div>
           </DrawerHeader>
 
           {!loading ? (
             <>
+              {/* CONTENT VIEW MODE */}
               {!isEditing && !directEditProject ? (
                 <>
-                  {/* VIEW MODE */}
-                  <div className="relative h-[calc(100vh-130px)] space-y-5! overflow-y-auto p-4">
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Project Name</FieldLegend>
-                        <FieldDescription className="text-foreground flex items-baseline justify-between">
-                          {project?.name}
-                          <span
-                            className={`ml-5 flex rounded-full px-2 py-1.5 text-xs/2 ${
-                              project?.status === 'active'
-                                ? 'bg-blue-100 text-blue-700'
-                                : project?.status === 'completed'
-                                  ? 'bg-green-100 text-green-700'
-                                  : project?.status === 'on-hold'
-                                    ? 'bg-yellow-100 text-yellow-700'
-                                    : 'bg-gray-200 text-gray-700'
-                            }`}
-                          >
-                            {project?.status}
-                          </span>
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Description</FieldLegend>
-                        <FieldDescription
-                          className={`${project?.description ? 'text-foreground' : 'text-muted-foreground'}`}
+                  <div className="h-[calc(100vh-140px)] space-y-7 overflow-y-auto p-7">
+                    {/* Project Name */}
+                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                      <div className="flex items-start justify-between">
+                        <h3 className="text-ui-md font-medium text-neutral-900">{project?.name}</h3>
+                        <div
+                          className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium uppercase"
+                          style={{
+                            backgroundColor: `color-mix(in oklab, var(--status-${project?.status}) 12%, white)`,
+                            color: `var(--status-${project?.status})`,
+                          }}
                         >
-                          {project?.description || 'No description'}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-                    <div className="flex gap-4">
-                      <Field>
-                        <FieldSet>
-                          <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                            <CalendarIcon size={16} className="mr-1" />
-                            Start Date
-                          </FieldLegend>
-                          <FieldDescription
-                            className={`${project?.start_date ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {project?.start_date ? new Date(project.start_date).toLocaleDateString() : 'No start date'}
-                          </FieldDescription>
-                        </FieldSet>
-                      </Field>
-                      <Field>
-                        <FieldSet>
-                          <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                            <CalendarIcon size={16} className="mr-1" />
-                            End Date
-                          </FieldLegend>
-                          <FieldDescription
-                            className={`${project?.end_date ? 'text-foreground' : 'text-muted-foreground'}`}
-                          >
-                            {project?.end_date ? new Date(project.end_date).toLocaleDateString() : 'No end date'}
-                          </FieldDescription>
-                        </FieldSet>
-                      </Field>
+                          <span
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ backgroundColor: `var(--status-${project?.status})` }}
+                          />
+                          {project?.status}
+                        </div>
+                      </div>
+                      <p
+                        className={`text-ui-sm mt-2.5 leading-relaxed ${project?.description ? 'text-neutral-700' : 'text-neutral-400 italic'}`}
+                      >
+                        {project?.description || 'No description provided'}
+                      </p>
                     </div>
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Tasks</FieldLegend>
-                        <FieldDescription className="text-foreground text-justify">No tasks yet</FieldDescription>
-                      </FieldSet>
-                    </Field>
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                          <CalendarClock size={16} className="mr-1" />
-                          Created At
-                        </FieldLegend>
-                        <FieldDescription className="text-foreground">
-                          {project?.created_at && new Date(project.created_at).toLocaleString()}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-                  </div>
 
+                    {/* Description */}
+                    {/* <div className="bg-card rounded-2xl p-4 shadow-sm">
+                      <h4 className="text-ui-xs mb-1 text-neutral-500">Description</h4>
+                      <p
+                        className={`text-ui-sm ${project?.description ? 'text-neutral-900' : 'text-neutral-400 italic'}`}
+                      >
+                        {project?.description || 'No description provided'}
+                      </p>
+                    </div> */}
+
+                    {/* Dates */}
+                    <div className="bg-card flex items-center justify-between rounded-2xl p-4 shadow-sm">
+                      <div className="space-y-1">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarIcon size={13} />
+                          Start
+                        </div>
+                        <div
+                          className={`text-ui-sm ${
+                            project?.start_date ? 'text-neutral-900' : 'text-neutral-400 italic'
+                          }`}
+                        >
+                          {project?.start_date ? formatDateForDisplay(new Date(project?.start_date)) : 'Not set'}
+                        </div>
+                      </div>
+
+                      <div className="h-10 w-px bg-neutral-200/70" />
+
+                      <div className="space-y-1">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarIcon size={13} />
+                          End
+                        </div>
+                        <div
+                          className={`text-ui-sm ${project?.end_date ? 'text-neutral-900' : 'text-neutral-400 italic'}`}
+                        >
+                          {project?.end_date ? formatDateForDisplay(new Date(project?.end_date)) : 'Not set'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tasks */}
+                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                      <h4 className="text-ui-xs mb-1 font-medium text-neutral-500 uppercase">Tasks</h4>
+                      <p className="text-ui-sm text-neutral-400 italic">No tasks yet</p>
+                    </div>
+
+                    {/* Created At */}
+                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                      <div className="space-y-1">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarClock size={13} />
+                          Created At
+                        </div>
+                        <div className="text-ui-sm text-neutral-900">
+                          {project?.created_at && formatDateForDisplay(new Date(project.created_at))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <DrawerFooter className="border-t">
-                    <div className="flex items-center justify-end gap-4">
+                    <div className="flex flex-col gap-4 sm:flex-row">
                       <Button
                         variant="outline"
                         onClick={() => setDeleteDialogOpen(true)}
                         size={'lg'}
-                        className="flex-1 border-red-200"
+                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         <Trash2 />
                         Delete Project
                       </Button>
-                      <Button onClick={handleEdit} variant={'outline'} size={'lg'} className="flex-1">
+                      <Button
+                        onClick={handleEdit}
+                        variant={'outline'}
+                        size={'lg'}
+                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-[0.98]"
+                      >
                         <SquarePen />
                         Edit Project
                       </Button>
@@ -317,9 +314,8 @@ export const ProjectDetailsPage = () => {
                 </>
               ) : (
                 /* EDIT MODE */
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="h-[calc(100vh-130px)] space-y-4 overflow-y-auto p-4">
-                    {/* Server Error */}
+                <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
+                  <div className="h-[calc(100vh-140px)] space-y-8 overflow-y-auto p-6">
                     {serverError && (
                       <Alert variant="destructive">
                         <AlertDescription>{serverError}</AlertDescription>
@@ -333,9 +329,9 @@ export const ProjectDetailsPage = () => {
                       </Label>
                       <Input
                         {...register('name')}
+                        className="bg-white"
                         id="name"
                         placeholder="Project name"
-                        className={errors.name ? 'border-red-500' : ''}
                         disabled={isSubmitting}
                       />
                       {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
@@ -350,6 +346,7 @@ export const ProjectDetailsPage = () => {
                         placeholder="Project description"
                         rows={4}
                         disabled={isSubmitting}
+                        className="bg-white"
                       />
                     </div>
 
@@ -361,7 +358,7 @@ export const ProjectDetailsPage = () => {
                         onValueChange={(value) => setValue('status', value as any)}
                         disabled={isSubmitting}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-white">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -373,31 +370,28 @@ export const ProjectDetailsPage = () => {
                       </Select>
                     </div>
 
-                    {/* ✅ FIXED: Dates with proper handling */}
-                    <div className="flex justify-between gap-4">
-                      {/* Start Date */}
+                    {/* Dates */}
+                    <div className="flex gap-4">
                       <div className="flex-1">
-                        <Label htmlFor="start_date" className="mb-2">
+                        <Label htmlFor="start_date" className="mb-1">
                           Start Date
                         </Label>
-                        <div className="relative flex">
+                        <div className="relative">
                           <Input
-                            value={formatDateForDisplay(startDate)} // ← Display in locale format
+                            value={formatDateForDisplay(startDate)}
                             placeholder="dd/mm/yyyy"
-                            disabled={isSubmitting}
+                            disabled
                             readOnly
+                            className="bg-white opacity-100!"
                           />
-                          {/* Hidden input for form */}
                           <input type="hidden" {...register('start_date')} />
-
                           <Popover open={startDatePopover} onOpenChange={setStartDatePopover}>
                             <PopoverTrigger asChild>
                               <Button
                                 type="button"
                                 variant="ghost"
-                                size={'icon'}
+                                size="icon"
                                 className="absolute top-1/2 right-2 -translate-y-1/2"
-                                disabled={isSubmitting}
                               >
                                 <CalendarIcon className="size-4" />
                                 <span className="sr-only">Select date</span>
@@ -416,29 +410,26 @@ export const ProjectDetailsPage = () => {
                         </div>
                       </div>
 
-                      {/* End Date */}
                       <div className="flex-1">
-                        <Label htmlFor="end_date" className="mb-2">
+                        <Label htmlFor="end_date" className="mb-1">
                           End Date
                         </Label>
-                        <div className="relative flex">
+                        <div className="relative">
                           <Input
-                            value={formatDateForDisplay(endDate)} // ← Display in locale format
+                            value={formatDateForDisplay(endDate)}
                             placeholder="dd/mm/yyyy"
-                            disabled={isSubmitting}
+                            disabled
                             readOnly
+                            className="bg-white opacity-100!"
                           />
-                          {/* Hidden input for form */}
                           <input type="hidden" {...register('end_date')} />
-
                           <Popover open={endDatePopover} onOpenChange={setEndDatePopover}>
                             <PopoverTrigger asChild>
                               <Button
                                 type="button"
                                 variant="ghost"
-                                size={'icon'}
+                                size="icon"
                                 className="absolute top-1/2 right-2 -translate-y-1/2"
-                                disabled={isSubmitting}
                               >
                                 <CalendarIcon className="size-4" />
                                 <span className="sr-only">Select date</span>
@@ -459,15 +450,16 @@ export const ProjectDetailsPage = () => {
                     </div>
                   </div>
 
-                  <DrawerFooter className="border-t pt-4">
-                    <div className="flex gap-2">
+                  {/* FOOTER */}
+                  <DrawerFooter className="border-t">
+                    <div className="flex items-center justify-end gap-4">
                       <Button
                         size={'lg'}
-                        type="button"
                         variant="outline"
+                        type="button"
                         onClick={handleCancelEdit}
                         disabled={isSubmitting}
-                        className="flex-1"
+                        className="text-ui-sm w-full flex-1 font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         Cancel
                       </Button>
@@ -475,7 +467,7 @@ export const ProjectDetailsPage = () => {
                         size={'lg'}
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
                       >
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                       </Button>

@@ -138,7 +138,7 @@ export const CreateTaskForm = () => {
   const selectedProject = projects.find((p) => p.id === selectedProjectId)
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
       {/* Server Error */}
       {serverError && (
         <Alert variant="destructive">
@@ -149,7 +149,7 @@ export const CreateTaskForm = () => {
 
       {/* Project Selection with Search */}
       <div className="space-y-2">
-        <Label htmlFor="project_id">
+        <Label htmlFor="project_id" className="text-ui-xs font-medium text-neutral-500">
           Project <span className="text-red-500">*</span>
         </Label>
         <Popover open={openProjectSelect} onOpenChange={setOpenProjectSelect}>
@@ -212,14 +212,14 @@ export const CreateTaskForm = () => {
 
       {/* Task Title */}
       <div className="space-y-2">
-        <Label htmlFor="title">
+        <Label htmlFor="title" className="text-ui-xs font-medium text-neutral-500">
           Task Title <span className="text-red-500">*</span>
         </Label>
         <Input
           {...register('title')}
           id="title"
           placeholder="e.g., Design homepage mockup"
-          className={errors.title ? 'border-red-500' : ''}
+          className={`bg-white ${errors.title ? 'border-red-500' : ''}`}
           disabled={isSubmitting}
         />
         {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
@@ -227,13 +227,16 @@ export const CreateTaskForm = () => {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description" className="text-ui-xs font-medium text-neutral-500">
+          Description
+        </Label>
         <Textarea
           {...register('description')}
           id="description"
           placeholder="Describe the task..."
           rows={4}
           disabled={isSubmitting}
+          className="bg-white"
         />
         {errors.description && <p className="text-sm text-red-500">{errors.description.message}</p>}
       </div>
@@ -242,13 +245,15 @@ export const CreateTaskForm = () => {
       <div className="grid grid-cols-2 gap-4">
         {/* Status */}
         <div className="space-y-2">
-          <Label htmlFor="status">Status</Label>
+          <Label htmlFor="status" className="text-ui-xs font-medium text-neutral-500">
+            Status
+          </Label>
           <Select
             defaultValue="todo"
             onValueChange={(value) => setValue('status', value as any)}
             disabled={isSubmitting}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-white">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
@@ -263,13 +268,15 @@ export const CreateTaskForm = () => {
 
         {/* Priority */}
         <div className="space-y-2">
-          <Label htmlFor="priority">Priority</Label>
+          <Label htmlFor="priority" className="text-ui-xs font-medium text-neutral-500">
+            Priority
+          </Label>
           <Select
             defaultValue="medium"
             onValueChange={(value) => setValue('priority', value as any)}
             disabled={isSubmitting}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-white">
               <SelectValue placeholder="Select priority" />
             </SelectTrigger>
             <SelectContent>
@@ -284,12 +291,14 @@ export const CreateTaskForm = () => {
 
       {/* Assign To */}
       <div className="space-y-2">
-        <Label htmlFor="assigned_to">Assign To</Label>
+        <Label htmlFor="assigned_to" className="text-ui-xs font-medium text-neutral-500">
+          Assign To
+        </Label>
         <Select
           onValueChange={(value) => setValue('assigned_to', value === 'none' ? null : value)}
           disabled={isSubmitting || loadingUsers}
         >
-          <SelectTrigger>
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder={loadingUsers ? 'Loading users...' : 'Select user'} />
           </SelectTrigger>
           <SelectContent>
@@ -305,9 +314,17 @@ export const CreateTaskForm = () => {
 
       {/* Due Date */}
       <div className="space-y-2">
-        <Label htmlFor="due_date">Due Date</Label>
+        <Label htmlFor="due_date" className="text-ui-xs font-medium text-neutral-500">
+          Due Date
+        </Label>
         <div className="relative flex">
-          <Input value={formatDateForDisplay(dueDate)} placeholder="mm/dd/yyyy" disabled={isSubmitting} readOnly />
+          <Input
+            className="bg-white"
+            value={formatDateForDisplay(dueDate)}
+            placeholder="mm/dd/yyyy"
+            disabled={isSubmitting}
+            readOnly
+          />
           <input type="hidden" {...register('due_date')} />
 
           <Popover open={openDueDate} onOpenChange={setOpenDueDate}>
@@ -338,10 +355,20 @@ export const CreateTaskForm = () => {
 
       {/* Actions */}
       <div className="flex gap-3">
-        <Button type="button" variant="outline" onClick={closeModal} disabled={isSubmitting} className="flex-1">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={closeModal}
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 hover:bg-neutral-100 active:scale-[0.98]"
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting} className="flex-1 bg-blue-600 hover:bg-blue-700">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
+        >
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isSubmitting ? 'Creating...' : 'Create Task'}
         </Button>

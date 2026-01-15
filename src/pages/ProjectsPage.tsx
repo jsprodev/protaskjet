@@ -2,9 +2,7 @@ import { Link, Outlet } from 'react-router-dom'
 import { Plus, FolderKanban, Calendar, Eye, Pencil, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Field, FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Loader } from '@/components/ui/loader'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useProjects } from '@/context/ProjectsContext'
 import { useModal } from '@/context/ModalContext'
 import { AlertDialogBox } from '@/components/common/AlertDialogBox'
@@ -12,13 +10,13 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { projectsApi } from '@/services/api/projects.api'
 import { useTasks } from '@/context/TasksContext'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 export const ProjectsPage = () => {
   const { openCreateProject } = useModal()
   const { projects, loading, error, deleteProject } = useProjects()
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null)
-
   const { loadTasks } = useTasks()
 
   const handleDelete = (projectId: string) => {
@@ -29,6 +27,7 @@ export const ProjectsPage = () => {
   const handleDeleteProject = async () => {
     if (!deleteProjectId) return
     setDeleteDialogOpen(false)
+
     try {
       await projectsApi.delete(deleteProjectId)
       deleteProject(deleteProjectId)
@@ -36,13 +35,11 @@ export const ProjectsPage = () => {
       loadTasks()
     } catch (err) {
       toast.error('Failed to delete project')
-      console.error('Error deleting project:', err)
+      console.error(err)
     }
   }
 
-  if (loading) {
-    return <Loader />
-  }
+  if (loading) return <Loader />
 
   return (
     <>
@@ -52,142 +49,202 @@ export const ProjectsPage = () => {
         handleConfirm={handleDeleteProject}
         description="This action cannot be undone. This will permanently delete your project and associated tasks."
       />
+
       <div className="flex flex-col gap-5">
+        {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold max-md:text-xl">Projects</h1>
-            <p className="text-gray-600">Manage your projects</p>
+            <h1 className="text-ui-xl font-semibold text-neutral-900">Projects</h1>
+            <p className="text-ui-sm text-neutral-500">Manage your projects</p>
           </div>
-          <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={openCreateProject}>
-            <Plus className="size-4" strokeWidth="2.5" /> New Project
+
+          <Button
+            onClick={openCreateProject}
+            className="text-ui-sm focus-visible:ring-offset-background border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+          >
+            <Plus className="size-4" strokeWidth={2.5} />
+            New Project
           </Button>
         </div>
 
         {/* Error State */}
         {error && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertDescription>{error}</AlertDescription>
+          <Alert variant="destructive">
+            <AlertDescription className="text-ui-sm">{error}</AlertDescription>
           </Alert>
         )}
 
         {/* Empty State */}
         {projects.length === 0 && (
           <div className="mt-8 flex">
-            <div className="bg-muted m-auto flex w-3xl flex-col items-center justify-center rounded-xl border p-8 text-center">
-              <FolderKanban className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-              <h3 className="mb-2 text-lg font-semibold">No Projects Yet</h3>
-              <p className="mb-4 text-gray-600">
-                You haven't created any Projects yet. Get started by creating your first Project.
+            <div className="bg-muted m-auto flex max-w-md flex-col items-center rounded-xl border p-8 text-center">
+              <FolderKanban className="mb-4 h-12 w-12 text-gray-400" />
+              <h3 className="text-ui-md font-semibold">No Projects Yet</h3>
+              <p className="text-ui-sm text-neutral-600">
+                You haven’t created any projects yet. Get started by creating your first project.
               </p>
             </div>
           </div>
         )}
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="density-compacts grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
             <div
               key={project.id}
-              className="relative flex flex-col gap-4 rounded-xl border bg-white p-4 transition-shadow hover:shadow-md"
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-xl hover:shadow-neutral-900/10"
             >
-              <div className="flex items-baseline justify-between">
-                <h1 className="text-md font-medium">{project.name}</h1>
-                <span
-                  className={`ml-5 rounded-full px-2 py-1.5 text-xs/2 ${
-                    project.status === 'active'
-                      ? 'bg-blue-100 text-blue-700'
-                      : project.status === 'completed'
-                        ? 'bg-green-100 text-green-700'
-                        : project.status === 'on-hold'
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-gray-200 text-gray-700'
+              {/* Accent Bar */}
+              <div
+                className="h-0.5"
+                style={{
+                  backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 70%, white)`,
+                }}
+              />
+
+              {/* Header */}
+              <div
+                className="flex items-center justify-between border-b border-neutral-100"
+                style={{
+                  paddingInline: 'var(--space-card-x)',
+                  paddingBlock: 'var(--space-card-y)',
+                  gap: 'var(--space-section-gap)',
+                }}
+              >
+                <h2 className="text-ui-md min-w-0 truncate font-semibold tracking-tight text-neutral-900">
+                  {project.name}
+                </h2>
+
+                <div
+                  className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium uppercase"
+                  style={{
+                    backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 12%, white)`,
+                    color: `var(--status-${project.status})`,
+                  }}
+                >
+                  <span
+                    className="h-1.5 w-1.5 rounded-full"
+                    style={{ backgroundColor: `var(--status-${project.status})` }}
+                  />
+                  {project.status}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div
+                className="flex flex-col"
+                style={{
+                  paddingInline: 'var(--space-card-x)',
+                  paddingBlock: 'var(--space-card-y)',
+                  gap: 'var(--space-section-gap)',
+                }}
+              >
+                <p
+                  className={`text-ui-sm min-h-[4.2rem] ${
+                    project.description ? 'line-clamp-3 text-neutral-600' : 'text-neutral-400 italic'
                   }`}
                 >
-                  {project.status}
-                </span>
-              </div>
-              <p
-                className={`text-sm ${project.description ? 'text-foreground line-clamp-3' : 'text-muted-foreground'} `}
-              >
-                {project.description || 'no description'}
-              </p>
+                  {project.description || 'No description provided'}
+                </p>
 
-              <div className="text-muted-foreground mb-12 flex">
-                <Field>
-                  <FieldSet>
-                    <FieldLegend className="mb-2 flex items-center text-xs!">
-                      <Calendar size={16} className="mr-1" />
-                      Start Date
-                    </FieldLegend>
-                    <FieldDescription className={`${project.start_date ? 'text-foreground' : 'text-muted-foreground'}`}>
-                      {project.start_date ? new Date(project.start_date).toLocaleDateString() : 'no start date'}
-                    </FieldDescription>
-                  </FieldSet>
-                </Field>
-                <Field>
-                  <FieldSet>
-                    <FieldLegend className="mb-2 flex items-center text-xs!">
-                      <Calendar size={16} className="mr-1" />
-                      End Date
-                    </FieldLegend>
-                    <FieldDescription className={`${project.end_date ? 'text-foreground' : 'text-muted-foreground'}`}>
-                      {project.end_date ? new Date(project.end_date).toLocaleDateString() : 'no end date'}
-                    </FieldDescription>
-                  </FieldSet>
-                </Field>
+                {/* Dates */}
+                <div className="flex items-center justify-between rounded-xl border border-neutral-100 bg-neutral-50/60 px-4 py-2.5">
+                  <div className="space-y-1">
+                    <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                      <Calendar size={13} />
+                      Start
+                    </div>
+                    <div
+                      className={`text-ui-sm ${project.start_date ? 'text-neutral-900' : 'text-neutral-400 italic'}`}
+                    >
+                      {project.start_date
+                        ? new Date(project.start_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : 'Not set'}
+                    </div>
+                  </div>
+
+                  <div className="h-8 w-px bg-neutral-200/70" />
+
+                  <div className="space-y-1 text-right">
+                    <div className="text-ui-xs flex items-center justify-end gap-1.5 font-medium text-neutral-500 uppercase">
+                      <Calendar size={13} />
+                      End
+                    </div>
+                    <div className={`text-ui-sm ${project.end_date ? 'text-neutral-900' : 'text-neutral-400 italic'}`}>
+                      {project.end_date
+                        ? new Date(project.end_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : 'Not set'}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="absolute right-4 bottom-4 flex gap-2">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link to={`/projects/${project.id}`}>
-                      <Button
-                        variant={'outline'}
-                        size={'icon-sm'}
-                        className="cursor-pointer transition-shadow hover:shadow-sm"
-                      >
-                        <Eye />
-                      </Button>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>View project details</p>
-                  </TooltipContent>
-                </Tooltip>
+
+              {/* Actions */}
+              <div
+                className="mt-auto flex gap-2 border-t border-neutral-100"
+                style={{
+                  paddingBlock: 'var(--space-card-y)',
+                  paddingInline: 'var(--space-card-x)',
+                }}
+              >
+                <Link to={`/projects/${project.id}`} className="flex-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-ui-sm w-full gap-2 hover:border-blue-300 hover:bg-blue-50 active:scale-95"
+                    style={{ paddingBlock: 'var(--space-button-y)' }}
+                  >
+                    <Eye size={15} />
+                    View Details
+                  </Button>
+                </Link>
+
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link to={`/projects/${project.id}`} state={{ directEditProject: true }}>
                       <Button
-                        variant={'outline'}
-                        size={'icon-sm'}
-                        className="cursor-pointer transition-shadow hover:shadow-sm"
+                        asChild
+                        variant="outline"
+                        size="icon-sm"
+                        className="hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
+                        style={{ paddingBlock: 'var(--space-button-y)' }}
                       >
-                        <Pencil />
+                        <span>
+                          <Pencil size={15} />
+                        </span>
                       </Button>
                     </Link>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Edit project</p>
-                  </TooltipContent>
+                  <TooltipContent className="text-ui-xs text-white">Edit task</TooltipContent>
                 </Tooltip>
+
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant={'outline'}
-                      size={'icon-sm'}
-                      className="cursor-pointer transition-shadow hover:shadow-sm"
+                      variant="outline"
+                      size="icon-sm"
+                      className="hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
+                      style={{ paddingBlock: 'var(--space-button-y)' }}
                       onClick={() => handleDelete(project.id)}
                     >
-                      <Trash2 />
+                      <Trash2 size={15} />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Delete project</p>
-                  </TooltipContent>
+                  <TooltipContent className="text-ui-xs text-white">Delete task permanently</TooltipContent>
                 </Tooltip>
               </div>
             </div>
           ))}
         </div>
+
         <Outlet />
       </div>
     </>

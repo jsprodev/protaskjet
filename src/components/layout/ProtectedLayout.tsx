@@ -11,7 +11,7 @@ export const ProtectedLayout = ({ children }: { children: ReactNode }) => {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <div className="p-8 max-md:p-6">{children}</div>
+        <div className="min-h-screen bg-neutral-100 p-6 max-md:p-6">{children}</div>
       </SidebarInset>
       <Toaster position="top-right" closeButton={true} dir="ltr" duration={5000} className="toast" />
       <GlobalModal />
