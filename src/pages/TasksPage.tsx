@@ -1,5 +1,16 @@
 import { useState, useMemo } from 'react'
-import { ChevronsUpDown, Trash2, Pencil, Plus, Eye, CheckSquare } from 'lucide-react'
+import {
+  ChevronsUpDown,
+  Trash2,
+  Pencil,
+  Plus,
+  Eye,
+  CheckSquare,
+  ArrowUp,
+  ArrowRight,
+  ArrowDown,
+  ShieldAlert,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTasks } from '@/context/TasksContext'
 import { Loader } from '@/components/ui/loader'
@@ -175,7 +186,7 @@ export const TasksPage = () => {
           const status = row.getValue('status') as string
           return (
             <span
-              className={`rounded-full px-3 py-1.5 text-[11px] font-medium uppercase`}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase`}
               style={{
                 backgroundColor: `color-mix(in oklab, var(--status-${status}) 12%, white)`,
                 color: `var(--status-${status})`,
@@ -206,10 +217,31 @@ export const TasksPage = () => {
         ),
         cell: ({ row }) => {
           const priority = row.getValue('priority') as string
+          let symbol
+          switch (priority) {
+            case 'low':
+              symbol = <ArrowDown className="size-4 text-neutral-500" />
+              break
+            case 'medium':
+              symbol = <ArrowRight className="size-4 text-neutral-500" />
+              break
+            case 'high':
+              symbol = <ArrowUp className="size-4 text-neutral-500" />
+              break
+            case 'urgent':
+              symbol = (
+                <>
+                  <ShieldAlert className="size-4 text-neutral-500" />
+                </>
+              )
+              break
+            default:
+              symbol = ' '
+          }
           return (
-            <span className="text-ui-xs rounded-full bg-neutral-100 px-3 py-1.5 font-medium text-neutral-700">
-              {priority}
-            </span>
+            <div className="text-ui-xs flex-inline flex items-center gap-2 font-medium text-neutral-700">
+              {symbol} {priority}
+            </div>
           )
         },
       },
@@ -239,7 +271,11 @@ export const TasksPage = () => {
         cell: ({ row }) => {
           const user = row.original.users as any
           const userName = Array.isArray(user) ? user[0]?.name : user?.name
-          return <span className="text-ui-xs font-medium text-neutral-700">{userName || 'Unassigned'}</span>
+          return (
+            <span className="text-ui-xs rounded-full border border-neutral-200 px-2.5 py-1 font-medium text-neutral-700">
+              {userName || 'unassigned'}
+            </span>
+          )
         },
       },
       {
@@ -350,143 +386,153 @@ export const TasksPage = () => {
         </div>
 
         {/* FILTERS CARD */}
-        <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
-          <div className="flex flex-wrap gap-4">
-            <Field className="min-w-[220px] flex-1 gap-1">
-              <FieldLabel>Search</FieldLabel>
-              <Input
-                placeholder="Title, project, user"
-                value={globalFilter}
-                onChange={(e) => setGlobalFilter(e.target.value)}
-                className="bg-white"
-              />
-            </Field>
-
-            <Field className="w-[160px] gap-1">
-              <FieldLabel>Status</FieldLabel>
-              <Select
-                value={(table.getColumn('status')?.getFilterValue() as string) ?? 'all'}
-                onValueChange={(value) =>
-                  table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value)
-                }
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="All statuses" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="blocked">Blocked</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="review">Review</SelectItem>
-                  <SelectItem value="todo">Todo</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field className="w-[160px] gap-1">
-              <FieldLabel>Priority</FieldLabel>
-              <Select
-                value={(table.getColumn('priority')?.getFilterValue() as string) ?? 'all'}
-                onValueChange={(value) =>
-                  table.getColumn('priority')?.setFilterValue(value === 'all' ? undefined : value)
-                }
-              >
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="All priorities" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </Field>
-
-            <Field className="w-[160px] gap-1">
-              <FieldLabel className="invisible">Reset</FieldLabel>
-              <Button
-                type="button"
-                variant="outline"
-                className="text-ui-sm bg-white font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
-                onClick={() => {
-                  table.getColumn('priority')?.setFilterValue('')
-                  table.getColumn('status')?.setFilterValue('')
-                }}
-              >
-                Reset Filters
-              </Button>
-            </Field>
-          </div>
-        </div>
 
         {/* TABLE */}
         {tasks.length ? (
-          <div className="flex flex-col gap-4">
-            <div className="min-h-[546px] w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
-              <Table className="table-fixed">
-                <TableHeader className="bg-neutral-50">
-                  {table.getHeaderGroups().map((hg) => (
-                    <TableRow key={hg.id} className="border-b border-neutral-200">
-                      {hg.headers.map((header) => (
-                        <TableHead key={header.id} className="px-4 py-3" style={{ width: `${header.getSize()}px` }}>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
+          <div className="flex flex-col gap-8">
+            <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
+              <div className="flex flex-wrap gap-4">
+                <Field className="min-w-[220px] flex-1 gap-1">
+                  <FieldLabel>Search</FieldLabel>
+                  <Input
+                    placeholder="Title, project, user"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="bg-white"
+                  />
+                </Field>
 
-                <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} className="border-b border-neutral-200 bg-white hover:bg-neutral-50">
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="px-4 py-2" style={{ width: `${cell.column.getSize()}px` }}>
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                <Field className="w-[160px] gap-1">
+                  <FieldLabel>Status</FieldLabel>
+                  <Select
+                    value={(table.getColumn('status')?.getFilterValue() as string) ?? 'all'}
+                    onValueChange={(value) =>
+                      table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value)
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="blocked">Blocked</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="review">Review</SelectItem>
+                      <SelectItem value="todo">Todo</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field className="w-[160px] gap-1">
+                  <FieldLabel>Priority</FieldLabel>
+                  <Select
+                    value={(table.getColumn('priority')?.getFilterValue() as string) ?? 'all'}
+                    onValueChange={(value) =>
+                      table.getColumn('priority')?.setFilterValue(value === 'all' ? undefined : value)
+                    }
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="All priorities" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="urgent">Urgent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+
+                <Field className="w-[160px] gap-1">
+                  <FieldLabel className="invisible">Reset</FieldLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="text-ui-sm bg-white font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    onClick={() => {
+                      table.getColumn('priority')?.setFilterValue('')
+                      table.getColumn('status')?.setFilterValue('')
+                    }}
+                  >
+                    Reset Filters
+                  </Button>
+                </Field>
+              </div>
             </div>
-            <div className="flex items-center justify-between px-1">
-              <div className="text-ui-sm text-neutral-600">
-                Showing{' '}
-                {table.getRowModel().rows.length > 0
-                  ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
-                  : 0}{' '}
-                to{' '}
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length
-                )}{' '}
-                of {table.getFilteredRowModel().rows.length} records
+
+            <div className="flex flex-col gap-4">
+              <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
+                <Table className="table-fixed">
+                  <TableHeader className="bg-neutral-50">
+                    {table.getHeaderGroups().map((hg) => (
+                      <TableRow key={hg.id} className="border-b border-neutral-200">
+                        {hg.headers.map((header) => (
+                          <TableHead key={header.id} className="px-4 py-3" style={{ width: `${header.getSize()}px` }}>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+
+                  <TableBody>
+                    {table.getRowModel().rows.map((row) => (
+                      <TableRow key={row.id} className="border-b border-neutral-200 bg-white hover:bg-neutral-50">
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className="px-4 py-2"
+                            style={{ width: `${cell.column.getSize()}px` }}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-ui-sm text-neutral-600">
-                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                </span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                  >
-                    Next
-                  </Button>
+              <div className="flex items-center justify-between px-1">
+                <div className="text-ui-sm text-neutral-600">
+                  Showing{' '}
+                  {table.getRowModel().rows.length > 0
+                    ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+                    : 0}{' '}
+                  to{' '}
+                  {Math.min(
+                    (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                    table.getFilteredRowModel().rows.length
+                  )}{' '}
+                  of {table.getFilteredRowModel().rows.length} records
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-ui-sm text-neutral-600">
+                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

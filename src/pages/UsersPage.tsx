@@ -135,7 +135,7 @@ export const UsersPage = () => {
           )
         },
         cell: ({ row }) => (
-          <span className="text-ui-xs rounded-full bg-neutral-100 px-3 py-1.5 font-medium text-neutral-700">
+          <span className="text-ui-xs rounded-full border border-neutral-200 px-2.5 py-1 font-medium text-neutral-700">
             {row.getValue('role')}
           </span>
         ),
@@ -301,8 +301,8 @@ export const UsersPage = () => {
         </div>
 
         {users.length ? (
-          <>
-            <div className="rounded-xl border bg-neutral-50 p-5">
+          <div className="flex flex-col gap-8">
+            <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
               <div className="flex flex-wrap gap-4">
                 <Field className="min-w-[220px] flex-1 gap-1">
                   <FieldLabel>Search:</FieldLabel>
@@ -341,84 +341,88 @@ export const UsersPage = () => {
               </div>
             </div>
 
-            <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border bg-white shadow-lg shadow-slate-900/10">
-              <Table className="table-fixed">
-                <TableHeader className="bg-neutral-50">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id} className="border-b border-neutral-200">
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id} className="px-4 py-3">
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(header.column.columnDef.header, header.getContext())}
-                          </TableHead>
-                        )
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
+            <div className="flex flex-col gap-4">
+              <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
+                <Table className="table-fixed">
+                  <TableHeader className="bg-neutral-50">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id} className="border-b border-neutral-200">
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead key={header.id} className="px-4 py-3">
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(header.column.columnDef.header, header.getContext())}
+                            </TableHead>
+                          )
+                        })}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={columns.length} className="text-center">
-                        no record found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            <div className="flex items-center justify-between px-1">
-              <div className="text-ui-sm text-neutral-600">
-                Showing{' '}
-                {table.getRowModel().rows.length > 0
-                  ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
-                  : 0}{' '}
-                to{' '}
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length
-                )}{' '}
-                of {table.getFilteredRowModel().rows.length} records
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel().rows.map((row) => (
+                        <TableRow key={row.id}>
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={columns.length} className="text-center">
+                          no record found
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-ui-sm text-neutral-600">
-                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-                </span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
-                  >
-                    Next
-                  </Button>
+              <div className="flex items-center justify-between px-1">
+                <div className="text-ui-sm text-neutral-600">
+                  Showing{' '}
+                  {table.getRowModel().rows.length > 0
+                    ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+                    : 0}{' '}
+                  to{' '}
+                  {Math.min(
+                    (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                    table.getFilteredRowModel().rows.length
+                  )}{' '}
+                  of {table.getFilteredRowModel().rows.length} records
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-ui-sm text-neutral-600">
+                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="mt-8 flex">
             <div className="bg-muted m-auto flex w-3xl flex-col items-center justify-center rounded-xl border p-8 text-center">
