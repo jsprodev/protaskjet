@@ -17,12 +17,14 @@ import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { useProjects } from '@/context/ProjectsContext'
 import { useModal } from '@/context/ModalContext'
+import { DrawerFooter } from '../ui/drawer'
 
-type CreateProjectFormProps = {
-  onSuccess?: () => void // ← Add callback prop
-}
+// type CreateProjectFormProps = {
+//   onSuccess?: () => void // ← Add callback prop
+// }
+// { onSuccess }: CreateProjectFormProps
 
-export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
+export const CreateProjectForm = () => {
   const { addProject } = useProjects()
   const [openStartDate, setOpenStartDate] = useState(false)
   const [openEndDate, setOpenEndDate] = useState(false)
@@ -89,174 +91,179 @@ export const CreateProjectForm = ({ onSuccess }: CreateProjectFormProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-7">
-      {/* Server Error */}
-      {serverError && (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{serverError}</AlertTitle>
-        </Alert>
-      )}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
+      <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
+        {/* Server Error */}
+        {serverError && (
+          <Alert variant="destructive">
+            <AlertCircleIcon />
+            <AlertTitle>{serverError}</AlertTitle>
+          </Alert>
+        )}
 
-      {/* Project Name */}
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-ui-xs font-medium text-neutral-500">
-          Project Name <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          {...register('name')}
-          id="name"
-          placeholder="e.g., Website Redesign"
-          disabled={isSubmitting}
-          className={`bg-white ${errors.name ? 'border-red-500' : ''} `}
-        />
-        {errors.name && <p className="text-ui-xs text-red-500">{errors.name.message}</p>}
-      </div>
-
-      {/* Description */}
-      <div className="space-y-2">
-        <Label htmlFor="description" className="text-ui-xs font-medium text-neutral-500">
-          Description
-        </Label>
-        <Textarea
-          {...register('description')}
-          id="description"
-          placeholder="Describe your project..."
-          rows={6}
-          disabled={isSubmitting}
-          className="resize-none bg-white"
-        />
-        {errors.description && <p className="text-ui-xs text-red-500">{errors.description.message}</p>}
-      </div>
-
-      {/* Status */}
-      <div className="space-y-2">
-        <Label htmlFor="status" className="text-ui-xs font-medium text-neutral-500">
-          Status
-        </Label>
-        <Select
-          defaultValue="active"
-          onValueChange={(value) => setValue('status', value as any)}
-          disabled={isSubmitting}
-        >
-          <SelectTrigger className="bg-white">
-            <SelectValue placeholder="Select status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="on-hold">On Hold</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Date Range */}
-      <div className="flex gap-4">
-        {/* Start Date */}
-        <div className="flex-1 space-y-2">
-          <Label htmlFor="start_date" className="text-ui-xs font-medium text-neutral-500">
-            Start Date
+        {/* Project Name */}
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-ui-xs font-medium text-neutral-500">
+            Project Name <span className="text-red-500">*</span>
           </Label>
-          <div className="relative">
-            <Input
-              value={formatDateForDisplay(startDate)}
-              placeholder="mm/dd/yyyy"
-              disabled={isSubmitting}
-              readOnly
-              className="bg-white pr-10"
-            />
-            <input type="hidden" {...register('start_date')} />
+          <Input
+            {...register('name')}
+            id="name"
+            placeholder="e.g., Website Redesign"
+            disabled={isSubmitting}
+            className={`bg-white ${errors.name ? 'border-red-500' : ''} `}
+          />
+          {errors.name && <p className="text-ui-xs text-red-500">{errors.name.message}</p>}
+        </div>
 
-            <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  disabled={isSubmitting}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
-                >
-                  <CalendarIcon className="size-4 text-neutral-500" />
-                  <span className="sr-only">Select date</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={handleStartDateSelect}
-                  captionLayout="dropdown"
-                  disabled={isSubmitting}
-                />
-              </PopoverContent>
-            </Popover>
+        {/* Description */}
+        <div className="space-y-2">
+          <Label htmlFor="description" className="text-ui-xs font-medium text-neutral-500">
+            Description
+          </Label>
+          <Textarea
+            {...register('description')}
+            id="description"
+            placeholder="Describe your project..."
+            rows={8}
+            disabled={isSubmitting}
+            className="resize-none bg-white"
+          />
+          {errors.description && <p className="text-ui-xs text-red-500">{errors.description.message}</p>}
+        </div>
+
+        {/* Status */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="status" className="text-ui-xs font-medium text-neutral-500">
+              Status
+            </Label>
+            <Select
+              defaultValue="active"
+              onValueChange={(value) => setValue('status', value as any)}
+              disabled={isSubmitting}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="on-hold">On Hold</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        {/* End Date */}
-        <div className="flex-1 space-y-2">
-          <Label htmlFor="end_date" className="text-ui-xs font-medium text-neutral-500">
-            End Date
-          </Label>
-          <div className="relative">
-            <Input
-              value={formatDateForDisplay(endDate)}
-              placeholder="mm/dd/yyyy"
-              disabled={isSubmitting}
-              readOnly
-              className="bg-white pr-10"
-            />
-            <input type="hidden" {...register('end_date')} />
+        {/* Date Range */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="start_date" className="text-ui-xs font-medium text-neutral-500">
+              Start Date
+            </Label>
+            <div className="relative">
+              <Input
+                value={formatDateForDisplay(startDate)}
+                placeholder="mm/dd/yyyy"
+                disabled={isSubmitting}
+                readOnly
+                className="bg-white pr-10"
+              />
+              <input type="hidden" {...register('start_date')} />
 
-            <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
-              <PopoverTrigger asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  disabled={isSubmitting}
-                  className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
-                >
-                  <CalendarIcon className="size-4 text-neutral-500" />
-                  <span className="sr-only">Select date</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent>
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={handleEndDateSelect}
-                  captionLayout="dropdown"
-                  disabled={isSubmitting}
-                />
-              </PopoverContent>
-            </Popover>
+              <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    disabled={isSubmitting}
+                    className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
+                  >
+                    <CalendarIcon className="size-4 text-neutral-500" />
+                    <span className="sr-only">Select date</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={handleStartDateSelect}
+                    captionLayout="dropdown"
+                    disabled={isSubmitting}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+
+          {/* End Date */}
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="end_date" className="text-ui-xs font-medium text-neutral-500">
+              End Date
+            </Label>
+            <div className="relative">
+              <Input
+                value={formatDateForDisplay(endDate)}
+                placeholder="mm/dd/yyyy"
+                disabled={isSubmitting}
+                readOnly
+                className="bg-white pr-10"
+              />
+              <input type="hidden" {...register('end_date')} />
+
+              <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    disabled={isSubmitting}
+                    className="absolute top-1/2 right-2 -translate-y-1/2 hover:bg-neutral-100 active:scale-[0.97]"
+                  >
+                    <CalendarIcon className="size-4 text-neutral-500" />
+                    <span className="sr-only">Select date</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={handleEndDateSelect}
+                    captionLayout="dropdown"
+                    disabled={isSubmitting}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onSuccess}
-          disabled={isSubmitting}
-          className="text-ui-sm flex-1 hover:bg-neutral-100 active:scale-[0.98]"
-        >
-          Cancel
-        </Button>
+      <DrawerFooter className="border-t">
+        <div className="flex items-center justify-end gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={closeModal}
+            disabled={isSubmitting}
+            className="text-ui-sm flex-1 hover:bg-neutral-100 active:scale-[0.98]"
+          >
+            Cancel
+          </Button>
 
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
-        >
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isSubmitting ? 'Creating…' : 'Create Project'}
-        </Button>
-      </div>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? 'Creating…' : 'Create Project'}
+          </Button>
+        </div>
+      </DrawerFooter>
     </form>
   )
 }

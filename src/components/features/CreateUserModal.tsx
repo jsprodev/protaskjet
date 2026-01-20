@@ -11,7 +11,7 @@ type CreateUserModalProps = {
 export const CreateUserModal = ({ open, onClose }: CreateUserModalProps) => {
   return (
     <Drawer direction="right" open={open} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[40%]!">
+      <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[50%]!">
         <DrawerHeader className="border-b p-3">
           <div className="flex items-center justify-between">
             <DrawerTitle>Create New User</DrawerTitle>
@@ -27,9 +27,7 @@ export const CreateUserModal = ({ open, onClose }: CreateUserModalProps) => {
             </DrawerClose>
           </div>
         </DrawerHeader>
-        <div className="max-h-screen overflow-y-auto p-7">
-          <CreateUserForm />
-        </div>
+        <CreateUserForm />
       </DrawerContent>
     </Drawer>
   )

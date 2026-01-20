@@ -22,12 +22,13 @@ export const tasksApi = {
       created_by: user.id,
       completed_at: null,
     }
-    console.log('Creating task with data:', taskData) // Debug log
+    // console.log('Creating task with data:', taskData) // Debug log
     const { data: task, error } = await supabase.from('tasks').insert([taskData]).select().single()
     if (error) {
       console.error('Task creation error:', error)
       throw new Error(error.message || 'Failed to create task')
     }
+    console.log(task)
     return task as Task
   },
 

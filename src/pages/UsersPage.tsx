@@ -12,6 +12,8 @@ import { Field, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { AlertDialogBox } from '@/components/common/AlertDialogBox'
 import type { User } from '@/types/database.types'
+import { useUsers } from '@/context/UsersContext'
+import { useModal } from '@/context/ModalContext'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -35,14 +37,15 @@ const fuzzyFilter: FilterFn<User> = (row, _columnId, value) => {
 }
 
 export const UsersPage = () => {
-  const [users, setUsers] = useState<User[]>([])
-  const [loading, setLoading] = useState(true)
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
+
+  const { users, loading, deleteUser } = useUsers()
+  const { openCreateUser } = useModal()
 
   const handleDelete = (userId: string) => {
     setDeleteUserId(userId)
@@ -54,7 +57,7 @@ export const UsersPage = () => {
     setDeleteDialogOpen(false)
     try {
       await usersApi.delete(deleteUserId)
-      setUsers((prev) => prev.filter((u) => u.id !== deleteUserId))
+      deleteUser(deleteUserId)
       toast.success('User deleted successfully!')
     } catch (err) {
       toast.error('Failed to delete user')
@@ -68,15 +71,15 @@ export const UsersPage = () => {
         accessorKey: 'name',
         header: ({ column }) => {
           return (
-            <div className="flex items-center gap-2">
-              <span>Name</span>
+            <div className="flex items-center">
+              <span className="text-ui-xs font-medium text-neutral-500 uppercase">Name</span>
               <Button
-                className="-ml-3 hover:bg-transparent"
                 variant="ghost"
-                size={'icon-sm'}
+                size="icon-sm"
+                className="hover:bg-transparent"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
               >
-                <ChevronsUpDown />
+                <ChevronsUpDown className="size-4" />
               </Button>
             </div>
           )
@@ -88,9 +91,9 @@ export const UsersPage = () => {
               <img
                 src={user.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.name}
                 alt={user.name}
-                className="h-8 w-8 rounded-full object-cover"
+                className="size-10 rounded-full object-cover"
               />
-              <span>{row.getValue('name')}</span>
+              <span className="text-ui-sm font-medium text-neutral-900">{row.getValue('name')}</span>
             </div>
           )
         },
@@ -99,110 +102,115 @@ export const UsersPage = () => {
         accessorKey: 'email',
         header: ({ column }) => {
           return (
-            <div className="flex items-center gap-2">
-              <span>Email</span>
+            <div className="flex items-center">
+              <span className="text-ui-xs font-medium text-neutral-500 uppercase">Email</span>
               <Button
-                className="-ml-3 hover:bg-transparent"
                 variant="ghost"
-                size={'icon-sm'}
+                size="icon-sm"
+                className="hover:bg-transparent"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
               >
-                <ChevronsUpDown />
+                <ChevronsUpDown className="size-4" />
               </Button>
             </div>
           )
         },
-        cell: ({ row }) => <div className="text-sm">{row.getValue('email')}</div>,
+        cell: ({ row }) => <div className="text-ui-sm font-medium text-neutral-700">{row.getValue('email')}</div>,
       },
       {
         accessorKey: 'role',
         header: ({ column }) => {
           return (
-            <div className="flex items-center gap-2">
-              <span>Role</span>
+            <div className="flex items-center">
+              <span className="text-ui-xs font-medium text-neutral-500 uppercase">Role</span>
               <Button
-                className="-ml-3 hover:bg-transparent"
                 variant="ghost"
-                size={'icon-sm'}
+                size="icon-sm"
+                className="hover:bg-transparent"
                 onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
               >
-                <ChevronsUpDown />
+                <ChevronsUpDown className="size-4" />
+              </Button>
+            </div>
+          )
+        },
+        cell: ({ row }) => (
+          <span className="text-ui-xs rounded-full bg-neutral-100 px-3 py-1.5 font-medium text-neutral-700">
+            {row.getValue('role')}
+          </span>
+        ),
+      },
+      {
+        accessorKey: 'created_at',
+        header: ({ column }) => {
+          return (
+            <div className="flex items-center">
+              <span className="text-ui-xs font-medium text-neutral-500 uppercase">Created At</span>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="hover:bg-transparent"
+                onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+              >
+                <ChevronsUpDown className="size-4" />
               </Button>
             </div>
           )
         },
         cell: ({ row }) => {
-          const role = row.getValue('role') as string
-          const roleColors: Record<string, string> = {
-            admin: 'bg-red-100 text-red-700',
-            manager: 'bg-blue-100 text-blue-700',
-            user: 'bg-gray-100 text-gray-700',
-          }
-          return (
-            <span
-              className={`inline-block rounded-full px-2.5 py-1 text-xs font-medium ${roleColors[role] || 'bg-gray-100'}`}
-            >
-              {role}
-            </span>
-          )
-        },
-      },
-      {
-        accessorKey: 'created_at',
-        header: 'Created At',
-        cell: ({ row }) => {
           const date = row.getValue('created_at') as string
-          return <div className="text-sm">{new Date(date).toLocaleDateString()}</div>
+          return <div className="text-ui-sm font-medium text-neutral-500">{new Date(date).toLocaleDateString()}</div>
         },
       },
       {
         id: 'actions',
-        header: 'Actions',
+        header: () => <div className="text-ui-xs text-right font-medium text-neutral-500 uppercase">Actions</div>,
         cell: ({ row }) => {
           const user = row.original
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to={`/users/${user.id}`}>
                     <Button
-                      variant={'outline'}
+                      variant="outline"
                       size={'icon-sm'}
-                      className="cursor-pointer transition-shadow hover:shadow-sm"
+                      className="hover:border-blue-300 hover:bg-blue-50 active:scale-95"
                     >
-                      <Eye />
+                      <Eye className="size-4" />
                     </Button>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>View user details</p>
-                </TooltipContent>
+                <TooltipContent>View user details</TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to={`/users/${user.id}`} state={{ directEditUser: true }}>
                     <Button
-                      variant={'outline'}
+                      variant="outline"
                       size={'icon-sm'}
-                      className="cursor-pointer transition-shadow hover:shadow-sm"
+                      className="hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
                     >
-                      <Pencil />
+                      <Pencil className="size-4" />
                     </Button>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>
-                  <p>Edit user</p>
-                </TooltipContent>
+                <TooltipContent>Edit user</TooltipContent>
               </Tooltip>
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size={'icon-sm'} className="h-8 w-8" onClick={() => handleDelete(user.id)}>
-                    <Trash2 />
+                  <Button
+                    variant="outline"
+                    size={'icon-sm'}
+                    className="hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    <Trash2 className="size-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Delete user</TooltipContent>
+                <TooltipContent>Delete user permanently</TooltipContent>
               </Tooltip>
             </div>
           )
@@ -231,6 +239,8 @@ export const UsersPage = () => {
       columnFilters,
       globalFilter,
     },
+    enableColumnResizing: false,
+    columnResizeMode: 'onChange',
   })
 
   const onSearch = (value: string) => {
@@ -246,22 +256,22 @@ export const UsersPage = () => {
     onSearch('')
   }
 
-  const loadUsers = async () => {
-    setLoading(true)
-    try {
-      const data = await usersApi.getAll()
-      setUsers(data)
-    } catch (err) {
-      toast.error('Failed to load users')
-      console.error('Error loading users:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const loadUsers = async () => {
+  //   setLoading(true)
+  //   try {
+  //     const data = await usersApi.getAll()
+  //     setUsers(data)
+  //   } catch (err) {
+  //     toast.error('Failed to load users')
+  //     console.error('Error loading users:', err)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
-  useState(() => {
-    loadUsers()
-  }, [])
+  // useState(() => {
+  //   loadUsers()
+  // }, [])
 
   if (loading) {
     return <Loader />
@@ -275,55 +285,70 @@ export const UsersPage = () => {
         handleConfirm={handleDeleteUser}
         description="This action cannot be undone. This will permanently delete the user."
       />
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold max-md:text-xl">Users</h1>
-            <p className="text-gray-600">Manage team members</p>
+            <h1 className="text-ui-xl font-semibold text-neutral-900">Users</h1>
+            <p className="text-ui-sm text-neutral-500">Manage team members</p>
           </div>
+          <Button
+            onClick={openCreateUser}
+            className="text-ui-sm focus-visible:ring-offset-background border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+          >
+            <Plus className="mr-1 h-4 w-4" />
+            New User
+          </Button>
         </div>
 
         {users.length ? (
           <>
-            <div className="flex gap-4">
-              <Field className="gap-1">
-                <FieldLabel>Search:</FieldLabel>
-                <Input
-                  placeholder="name, email, role"
-                  value={globalFilter}
-                  onChange={(e) => onSearch(e.target.value)}
-                />
-              </Field>
-              <Field className="gap-1 max-md:hidden">
-                <FieldLabel>Filter by Role:</FieldLabel>
-                <Select onValueChange={onRoleChange} defaultValue="all">
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Select a role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="user">User</SelectItem>
-                  </SelectContent>
-                </Select>
-              </Field>
-              <Field className="max-w-[100px] gap-1">
-                <FieldLabel className="invisible">reset filters</FieldLabel>
-                <Button variant={'outline'} size={'default'} onClick={handleReset}>
-                  Reset Filters
-                </Button>
-              </Field>
+            <div className="rounded-xl border bg-neutral-50 p-5">
+              <div className="flex flex-wrap gap-4">
+                <Field className="min-w-[220px] flex-1 gap-1">
+                  <FieldLabel>Search:</FieldLabel>
+                  <Input
+                    placeholder="name, email, role"
+                    value={globalFilter}
+                    onChange={(e) => onSearch(e.target.value)}
+                    className="bg-white"
+                  />
+                </Field>
+                <Field className="w-[160px] gap-1">
+                  <FieldLabel>Filter by Role:</FieldLabel>
+                  <Select onValueChange={onRoleChange} defaultValue="all">
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="user">User</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field className="w-[160px] gap-1">
+                  <FieldLabel className="invisible">reset filters</FieldLabel>
+                  <Button
+                    variant={'outline'}
+                    size={'default'}
+                    onClick={handleReset}
+                    className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                  >
+                    Reset Filters
+                  </Button>
+                </Field>
+              </div>
             </div>
 
-            <div className="w-full overflow-x-auto rounded-md border">
-              <Table className="table-auto">
-                <TableHeader className="bg-accent">
+            <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border bg-white">
+              <Table className="table-fixed">
+                <TableHeader className="bg-neutral-50">
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
+                    <TableRow key={headerGroup.id} className="border-b border-neutral-200">
                       {headerGroup.headers.map((header) => {
                         return (
-                          <TableHead key={header.id} className="text-muted-foreground p-2">
+                          <TableHead key={header.id} className="px-4 py-3">
                             {header.isPlaceholder
                               ? null
                               : flexRender(header.column.columnDef.header, header.getContext())}
@@ -355,18 +380,43 @@ export const UsersPage = () => {
               </Table>
             </div>
 
-            <div className="flex items-center justify-end space-x-2 py-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                Next
-              </Button>
+            <div className="flex items-center justify-between px-1">
+              <div className="text-ui-sm text-neutral-600">
+                Showing{' '}
+                {table.getRowModel().rows.length > 0
+                  ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+                  : 0}{' '}
+                to{' '}
+                {Math.min(
+                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                  table.getFilteredRowModel().rows.length
+                )}{' '}
+                of {table.getFilteredRowModel().rows.length} records
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-ui-sm text-neutral-600">
+                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </div>
           </>
         ) : (

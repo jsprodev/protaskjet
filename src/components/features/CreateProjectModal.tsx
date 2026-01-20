@@ -11,7 +11,7 @@ type CreateProjectModalProps = {
 export const CreateProjectModal = ({ open, onClose }: CreateProjectModalProps) => {
   return (
     <Drawer direction="right" open={open} onOpenChange={(open) => !open && onClose()}>
-      <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[40%]!">
+      <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[50%]!">
         <DrawerHeader className="border-b p-3">
           <div className="flex items-center justify-between">
             <DrawerTitle>Create New Project</DrawerTitle>
@@ -27,9 +27,7 @@ export const CreateProjectModal = ({ open, onClose }: CreateProjectModalProps) =
             </DrawerClose>
           </div>
         </DrawerHeader>
-        <div className="max-h-screen overflow-y-auto p-7">
-          <CreateProjectForm onSuccess={onClose} />
-        </div>
+        <CreateProjectForm />
       </DrawerContent>
     </Drawer>
   )

@@ -85,6 +85,9 @@ export const TasksPage = () => {
     () => [
       {
         accessorKey: 'title',
+        size: 320,
+        minSize: 320,
+        maxSize: 320,
         header: ({ column }) => (
           <div className="flex items-center gap-1">
             <span className="text-ui-xs font-medium text-neutral-500 uppercase">Title</span>
@@ -94,67 +97,85 @@ export const TasksPage = () => {
               className="hover:bg-transparent"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              <ChevronsUpDown className="h-3.5 w-3.5" />
+              <ChevronsUpDown className="size-4" />
             </Button>
           </div>
         ),
         cell: ({ row }) => (
-          <div className="text-ui-sm max-w-64 truncate font-medium text-neutral-900">{row.getValue('title')}</div>
+          <div className="text-ui-sm truncate font-medium text-neutral-900">{row.getValue('title')}</div>
         ),
       },
+      // {
+      //   accessorKey: 'description',
+      //   header: ({ column }) => (
+      //     <div className="flex items-center gap-1">
+      //       <span className="text-ui-xs font-medium text-neutral-500 uppercase">Description</span>
+      //       <Button
+      //         variant="ghost"
+      //         size="icon-sm"
+      //         className="hover:bg-transparent"
+      //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+      //       >
+      //         <ChevronsUpDown className="h-3.5 w-3.5" />
+      //       </Button>
+      //     </div>
+      //   ),
+      //   cell: ({ row }) => (
+      //     <div className="text-ui-sm max-w-64 truncate text-neutral-600">{row.getValue('description') || '—'}</div>
+      //   ),
+      // },
       {
-        accessorKey: 'description',
+        id: 'projectName',
+        size: 250,
+        minSize: 250,
+        maxSize: 250,
+        accessorFn: (row) => {
+          const project = row.projects as any
+          return Array.isArray(project) ? project[0]?.name : project?.name
+        },
         header: ({ column }) => (
           <div className="flex items-center gap-1">
-            <span className="text-ui-xs font-medium text-neutral-500 uppercase">Description</span>
+            <span className="text-ui-xs font-medium text-neutral-500 uppercase">Project Name</span>
             <Button
               variant="ghost"
               size="icon-sm"
               className="hover:bg-transparent"
               onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             >
-              <ChevronsUpDown className="h-3.5 w-3.5" />
+              <ChevronsUpDown className="size-4" />
             </Button>
           </div>
         ),
         cell: ({ row }) => (
-          <div className="text-ui-sm max-w-64 truncate text-neutral-600">{row.getValue('description') || '—'}</div>
-        ),
-      },
-      {
-        id: 'projectName',
-        accessorFn: (row) => {
-          const project = row.projects as any
-          return Array.isArray(project) ? project[0]?.name : project?.name
-        },
-        header: () => <span className="text-ui-xs font-medium text-neutral-500 uppercase">Project</span>,
-        cell: ({ row }) => (
-          <div className="text-ui-sm max-w-64 truncate text-neutral-700">
+          <div className="text-ui-sm truncate text-neutral-700">
             {(Array.isArray(row.original.projects) ? row.original.projects[0]?.name : row.original.projects?.name) ||
               '—'}
           </div>
         ),
       },
       {
-        accessorKey: 'priority',
-        header: () => <span className="text-ui-xs font-medium text-neutral-500 uppercase">Priority</span>,
-        cell: ({ row }) => {
-          const priority = row.getValue('priority') as string
-          return (
-            <span className="text-ui-xs rounded-full bg-neutral-100 px-2.5 py-1 font-medium text-neutral-700">
-              {priority}
-            </span>
-          )
-        },
-      },
-      {
         accessorKey: 'status',
-        header: () => <span className="text-ui-xs font-medium text-neutral-500 uppercase">Status</span>,
+        size: 100,
+        minSize: 100,
+        maxSize: 100,
+        header: ({ column }) => (
+          <div className="flex items-center gap-1">
+            <span className="text-ui-xs font-medium text-neutral-500 uppercase">Status</span>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="hover:bg-transparent"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              <ChevronsUpDown className="size-4" />
+            </Button>
+          </div>
+        ),
         cell: ({ row }) => {
           const status = row.getValue('status') as string
           return (
             <span
-              className={`text-ui-xs rounded-full px-3 py-1.5 font-medium uppercase`}
+              className={`rounded-full px-3 py-1.5 text-[11px] font-medium uppercase`}
               style={{
                 backgroundColor: `color-mix(in oklab, var(--status-${status}) 12%, white)`,
                 color: `var(--status-${status})`,
@@ -166,15 +187,72 @@ export const TasksPage = () => {
         },
       },
       {
-        id: 'actions',
-        size: 200,
+        accessorKey: 'priority',
+        size: 100,
         minSize: 100,
-        header: () => <span className="text-ui-xs font-medium text-neutral-500 uppercase">Actions</span>,
+        maxSize: 100,
+        header: ({ column }) => (
+          <div className="flex items-center gap-1">
+            <span className="text-ui-xs font-medium text-neutral-500 uppercase">Priority</span>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="hover:bg-transparent"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              <ChevronsUpDown className="size-4" />
+            </Button>
+          </div>
+        ),
+        cell: ({ row }) => {
+          const priority = row.getValue('priority') as string
+          return (
+            <span className="text-ui-xs rounded-full bg-neutral-100 px-3 py-1.5 font-medium text-neutral-700">
+              {priority}
+            </span>
+          )
+        },
+      },
+
+      {
+        id: 'assignedTo',
+        size: 100,
+        minSize: 100,
+        maxSize: 100,
+        accessorFn: (row) => {
+          const user = row.users as any
+          return Array.isArray(user) ? user[0]?.name : user?.name
+        },
+        header: ({ column }) => (
+          <div className="flex items-center gap-1">
+            <span className="text-ui-xs font-medium text-neutral-500 uppercase">Assignee</span>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className="hover:bg-transparent"
+              onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            >
+              <ChevronsUpDown className="size-4" />
+            </Button>
+          </div>
+        ),
+        cell: ({ row }) => {
+          const user = row.original.users as any
+          const userName = Array.isArray(user) ? user[0]?.name : user?.name
+          return <span className="text-ui-xs font-medium text-neutral-700">{userName || 'Unassigned'}</span>
+        },
+      },
+      {
+        id: 'actions',
+        size: 120,
+        minSize: 120,
+        maxSize: 120,
+        header: () => <div className="text-ui-xs text-right font-medium text-neutral-500 uppercase">Actions</div>,
         cell: ({ row }) => {
           const task = row.original
 
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to={`/tasks/${task.id}`}>
@@ -187,7 +265,7 @@ export const TasksPage = () => {
                     </Button>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>View task</TooltipContent>
+                <TooltipContent>View task details</TooltipContent>
               </Tooltip>
 
               <Tooltip>
@@ -239,6 +317,8 @@ export const TasksPage = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    enableColumnResizing: false,
+    columnResizeMode: 'onChange',
   })
 
   if (loading) return <Loader />
@@ -252,7 +332,7 @@ export const TasksPage = () => {
         description="This action cannot be undone. This will permanently delete your task."
       />
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8">
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <div>
@@ -270,7 +350,7 @@ export const TasksPage = () => {
         </div>
 
         {/* FILTERS CARD */}
-        <div className="rounded-xl border bg-white p-6">
+        <div className="rounded-xl border bg-neutral-50 p-5">
           <div className="flex flex-wrap gap-4">
             <Field className="min-w-[220px] flex-1 gap-1">
               <FieldLabel>Search</FieldLabel>
@@ -278,6 +358,7 @@ export const TasksPage = () => {
                 placeholder="Title, project, user"
                 value={globalFilter}
                 onChange={(e) => setGlobalFilter(e.target.value)}
+                className="bg-white"
               />
             </Field>
 
@@ -289,14 +370,16 @@ export const TasksPage = () => {
                   table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="todo">Todo</SelectItem>
+                  <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectItem value="done">Done</SelectItem>
                   <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="review">Review</SelectItem>
+                  <SelectItem value="todo">Todo</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -309,7 +392,7 @@ export const TasksPage = () => {
                   table.getColumn('priority')?.setFilterValue(value === 'all' ? undefined : value)
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="All priorities" />
                 </SelectTrigger>
                 <SelectContent>
@@ -317,41 +400,97 @@ export const TasksPage = () => {
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
                 </SelectContent>
               </Select>
+            </Field>
+
+            <Field className="w-[160px] gap-1">
+              <FieldLabel className="invisible">Reset</FieldLabel>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-ui-sm bg-white font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                onClick={() => {
+                  table.getColumn('priority')?.setFilterValue('')
+                  table.getColumn('status')?.setFilterValue('')
+                }}
+              >
+                Reset Filters
+              </Button>
             </Field>
           </div>
         </div>
 
         {/* TABLE */}
         {tasks.length ? (
-          <div className="w-full overflow-x-auto rounded-xl border bg-white">
-            <Table>
-              <TableHeader className="bg-neutral-50">
-                {table.getHeaderGroups().map((hg) => (
-                  <TableRow key={hg.id} className="border-b border-neutral-200">
-                    {hg.headers.map((header) => (
-                      <TableHead key={header.id} className="px-4 py-3">
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
+          <>
+            <div className="min-h-[546px] w-full overflow-x-auto rounded-xl border bg-white">
+              <Table className="table-fixed">
+                <TableHeader className="bg-neutral-50">
+                  {table.getHeaderGroups().map((hg) => (
+                    <TableRow key={hg.id} className="border-b border-neutral-200">
+                      {hg.headers.map((header) => (
+                        <TableHead key={header.id} className="px-4 py-3" style={{ width: `${header.getSize()}px` }}>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
 
-              <TableBody>
-                {table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} className="border-b border-neutral-200 bg-white hover:bg-neutral-50">
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="px-4 py-3">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} className="border-b border-neutral-200 bg-white hover:bg-neutral-50">
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="px-4 py-2" style={{ width: `${cell.column.getSize()}px` }}>
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <div className="flex items-center justify-between px-1">
+              <div className="text-ui-sm text-neutral-600">
+                Showing{' '}
+                {table.getRowModel().rows.length > 0
+                  ? table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+                  : 0}{' '}
+                to{' '}
+                {Math.min(
+                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                  table.getFilteredRowModel().rows.length
+                )}{' '}
+                of {table.getFilteredRowModel().rows.length} records
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-ui-sm text-neutral-600">
+                  Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                </span>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </>
         ) : (
           <div className="flex justify-center rounded-xl border bg-neutral-50 p-12">
             <div className="text-center">

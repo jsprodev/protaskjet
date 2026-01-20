@@ -6,7 +6,7 @@ import { usersApi } from '@/services/api/users.api'
 type UserContextType = {
   users: User[]
   loading: boolean
-  //   error: string | null
+  error: string | null
   loadUsers: () => Promise<void>
   addUser: (user: User) => void
   updateUser: (user: User) => void
@@ -50,7 +50,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <UserContext.Provider value={{ users, loading, loadUsers, addUser, updateUser, deleteUser }}>
+    <UserContext.Provider value={{ users, loading, error, loadUsers, addUser, updateUser, deleteUser }}>
       {children}
     </UserContext.Provider>
   )

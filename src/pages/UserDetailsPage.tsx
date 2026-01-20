@@ -16,6 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { updateUserSchema, type UpdateUserInput } from '@/schemas/user.schema'
 import { toast } from 'sonner'
 import { AlertDialogBox } from '@/components/common/AlertDialogBox'
+import { useUsers } from '@/context/UsersContext'
 
 export const UserDetailsPage = () => {
   const [user, setUser] = useState<User | null>(null)
@@ -31,6 +32,8 @@ export const UserDetailsPage = () => {
     location.state?.directEditUser ? location.state.directEditUser : false
   )
   const [openDrawer, setOpenDrawer] = useState<boolean>(true)
+
+  const { updateUser, deleteUser } = useUsers()
 
   const {
     register,
@@ -142,7 +145,7 @@ export const UserDetailsPage = () => {
         role: data.role,
         avatar: data.avatar,
       })
-
+      updateUser(updatedUser)
       setUser(updatedUser)
       setAvatarPreview(null)
       toast.success('User updated successfully.')
@@ -160,6 +163,7 @@ export const UserDetailsPage = () => {
     setDeleteDialogOpen(false)
     try {
       await usersApi.delete(user.id)
+      deleteUser(user.id)
       handleClose()
       toast.success('User deleted successfully.')
     } catch (err) {

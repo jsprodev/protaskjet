@@ -31,7 +31,6 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
       setTasks(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load tasks')
-      console.error('Error loading tasks:', err)
     } finally {
       setLoading(false)
     }

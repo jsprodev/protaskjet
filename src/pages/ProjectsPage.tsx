@@ -116,7 +116,7 @@ export const ProjectsPage = () => {
                 </h2>
 
                 <div
-                  className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium uppercase"
+                  className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium whitespace-nowrap uppercase"
                   style={{
                     backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 12%, white)`,
                     color: `var(--status-${project.status})`,

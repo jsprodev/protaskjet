@@ -28,7 +28,7 @@ import { format, parseISO } from 'date-fns'
 import { useProjects } from '@/context/ProjectsContext'
 import { toast } from 'sonner'
 import { AlertDialogBox } from '@/components/common/AlertDialogBox'
-import { useTasks } from '@/context/TasksContext'
+// import { useTasks } from '@/context/TasksContext'
 
 export const ProjectDetailsPage = () => {
   const [startDate, setStartDate] = useState<Date | undefined>()
@@ -46,7 +46,7 @@ export const ProjectDetailsPage = () => {
   const [openDrawer, setOpenDrawer] = useState<boolean>(true)
   const location = useLocation()
   const [directEditProject, setDirectEditProject] = useState<boolean>(location.state?.directEditProject ?? false)
-  const { loadTasks } = useTasks()
+  // const { loadTasks } = useTasks()
 
   const {
     register,
@@ -141,7 +141,7 @@ export const ProjectDetailsPage = () => {
       deleteProject(project.id)
       handleClose()
       toast.success('Project deleted successfully.')
-      loadTasks()
+      // loadTasks()
     } catch (err) {
       toast.dismiss(err instanceof Error ? err.message : 'Failed to delete project')
     }
@@ -178,14 +178,11 @@ export const ProjectDetailsPage = () => {
 
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
         {/* Apple/Linear drawer width */}
-        <DrawerContent
-          aria-description="Project Details"
-          aria-describedby="Project Details"
-          className="w-full! bg-neutral-50 sm:min-w-[30%] md:max-w-[560px] md:min-w-[32%] lg:max-w-[640px] xl:max-w-[720px]"
-        >
+        <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[50%]!">
+          {' '}
           {/* HEADER */}
-          <DrawerHeader className="p-0">
-            <div className="flex items-center justify-between border-b p-3">
+          <DrawerHeader className="border-b p-3">
+            <div className="flex items-center justify-between">
               <DrawerTitle className="text-ui-lg! font-medium text-neutral-900">
                 {isEditing || directEditProject ? 'Edit Project' : 'Project Details'}
               </DrawerTitle>
@@ -197,15 +194,14 @@ export const ProjectDetailsPage = () => {
               <DrawerDescription className="sr-only">View or edit project information</DrawerDescription>
             </div>
           </DrawerHeader>
-
           {!loading ? (
             <>
               {/* CONTENT VIEW MODE */}
               {!isEditing && !directEditProject ? (
                 <>
-                  <div className="h-[calc(100vh-140px)] space-y-7 overflow-y-auto p-7">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
                     {/* Project Name */}
-                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                    <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
                       <div className="flex items-start justify-between">
                         <h3 className="text-ui-md font-medium text-neutral-900">{project?.name}</h3>
                         <div
@@ -229,21 +225,11 @@ export const ProjectDetailsPage = () => {
                       </p>
                     </div>
 
-                    {/* Description */}
-                    {/* <div className="bg-card rounded-2xl p-4 shadow-sm">
-                      <h4 className="text-ui-xs mb-1 text-neutral-500">Description</h4>
-                      <p
-                        className={`text-ui-sm ${project?.description ? 'text-neutral-900' : 'text-neutral-400 italic'}`}
-                      >
-                        {project?.description || 'No description provided'}
-                      </p>
-                    </div> */}
-
                     {/* Dates */}
-                    <div className="bg-card flex items-center justify-between rounded-2xl p-4 shadow-sm">
-                      <div className="space-y-1">
+                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                      <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
-                          <CalendarIcon size={13} />
+                          <CalendarIcon size={16} />
                           Start
                         </div>
                         <div
@@ -257,9 +243,9 @@ export const ProjectDetailsPage = () => {
 
                       <div className="h-10 w-px bg-neutral-200/70" />
 
-                      <div className="space-y-1">
+                      <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
-                          <CalendarIcon size={13} />
+                          <CalendarIcon size={16} />
                           End
                         </div>
                         <div
@@ -271,20 +257,46 @@ export const ProjectDetailsPage = () => {
                     </div>
 
                     {/* Tasks */}
-                    <div className="bg-card rounded-2xl p-4 shadow-sm">
+                    <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
                       <h4 className="text-ui-xs mb-1 font-medium text-neutral-500 uppercase">Tasks</h4>
                       <p className="text-ui-sm text-neutral-400 italic">No tasks yet</p>
                     </div>
 
-                    {/* Created At */}
-                    <div className="bg-card rounded-2xl p-4 shadow-sm">
-                      <div className="space-y-1">
+                    {/* Created At Updated At */}
+                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                      <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarClock size={13} />
                           Created At
                         </div>
                         <div className="text-ui-sm text-neutral-900">
-                          {project?.created_at && formatDateForDisplay(new Date(project.created_at))}
+                          {project?.created_at &&
+                            new Date(project?.created_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                        </div>
+                      </div>
+                      <div className="h-10 w-px bg-neutral-200/70" />
+                      <div className="flex-1 space-y-2">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarClock size={13} />
+                          Updated At
+                        </div>
+                        <div className="text-ui-sm text-neutral-900">
+                          {project?.updated_at &&
+                            new Date(project?.updated_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
                         </div>
                       </div>
                     </div>
@@ -315,7 +327,7 @@ export const ProjectDetailsPage = () => {
               ) : (
                 /* EDIT MODE */
                 <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-                  <div className="h-[calc(100vh-140px)] space-y-8 overflow-y-auto p-6">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
                     {serverError && (
                       <Alert variant="destructive">
                         <AlertDescription>{serverError}</AlertDescription>
@@ -344,38 +356,38 @@ export const ProjectDetailsPage = () => {
                         {...register('description')}
                         id="description"
                         placeholder="Project description"
-                        rows={4}
+                        rows={8}
                         disabled={isSubmitting}
                         className="bg-white"
                       />
                     </div>
 
                     {/* Status */}
-                    <div className="space-y-2">
-                      <Label htmlFor="status">Status</Label>
-                      <Select
-                        defaultValue={project?.status}
-                        onValueChange={(value) => setValue('status', value as any)}
-                        disabled={isSubmitting}
-                      >
-                        <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="on-hold">On Hold</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="archived">Archived</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="status">Status</Label>
+                        <Select
+                          defaultValue={project?.status}
+                          onValueChange={(value) => setValue('status', value as any)}
+                          disabled={isSubmitting}
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="on-hold">On Hold</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="archived">Archived</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
                     {/* Dates */}
-                    <div className="flex gap-4">
-                      <div className="flex-1">
-                        <Label htmlFor="start_date" className="mb-1">
-                          Start Date
-                        </Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="start_date">Start Date</Label>
                         <div className="relative">
                           <Input
                             value={formatDateForDisplay(startDate)}
@@ -410,10 +422,8 @@ export const ProjectDetailsPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex-1">
-                        <Label htmlFor="end_date" className="mb-1">
-                          End Date
-                        </Label>
+                      <div className="flex-1 space-y-2">
+                        <Label htmlFor="end_date">End Date</Label>
                         <div className="relative">
                           <Input
                             value={formatDateForDisplay(endDate)}
