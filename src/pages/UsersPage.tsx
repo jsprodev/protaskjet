@@ -341,7 +341,7 @@ export const UsersPage = () => {
               </div>
             </div>
 
-            <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border bg-white">
+            <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border bg-white shadow-lg shadow-slate-900/10">
               <Table className="table-fixed">
                 <TableHeader className="bg-neutral-50">
                   {table.getHeaderGroups().map((headerGroup) => (

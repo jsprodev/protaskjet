@@ -350,7 +350,7 @@ export const TasksPage = () => {
         </div>
 
         {/* FILTERS CARD */}
-        <div className="rounded-xl border bg-neutral-50 p-5">
+        <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
           <div className="flex flex-wrap gap-4">
             <Field className="min-w-[220px] flex-1 gap-1">
               <FieldLabel>Search</FieldLabel>
@@ -424,8 +424,8 @@ export const TasksPage = () => {
 
         {/* TABLE */}
         {tasks.length ? (
-          <>
-            <div className="min-h-[546px] w-full overflow-x-auto rounded-xl border bg-white">
+          <div className="flex flex-col gap-4">
+            <div className="min-h-[546px] w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
               <Table className="table-fixed">
                 <TableHeader className="bg-neutral-50">
                   {table.getHeaderGroups().map((hg) => (
@@ -490,7 +490,7 @@ export const TasksPage = () => {
                 </div>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <div className="flex justify-center rounded-xl border bg-neutral-50 p-12">
             <div className="text-center">
