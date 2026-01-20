@@ -146,7 +146,6 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
                   disabled={isSubmitting}
                   className="cursor-pointer bg-white"
                 />
-                <Upload className="-ml-8 size-4" />
               </div>
 
               {/* Help Text */}
@@ -163,7 +162,7 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
                     onClick={clearAvatar}
                     className="absolute -top-3 -right-3 rounded-full border bg-neutral-100 p-1 text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="size-4" />
                   </button>
                 </div>
               )}

@@ -199,7 +199,7 @@ export const ProjectDetailsPage = () => {
               {/* CONTENT VIEW MODE */}
               {!isEditing && !directEditProject ? (
                 <>
-                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {/* Project Name */}
                     <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
                       <div className="flex items-start justify-between">
@@ -327,7 +327,7 @@ export const ProjectDetailsPage = () => {
               ) : (
                 /* EDIT MODE */
                 <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {serverError && (
                       <Alert variant="destructive">
                         <AlertDescription>{serverError}</AlertDescription>

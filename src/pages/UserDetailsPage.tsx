@@ -5,7 +5,15 @@ import { Loader } from '@/components/ui/loader'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Field, FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from '@/components/ui/drawer'
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer'
 import { X, SquarePen, CalendarClock, Trash2, Upload } from 'lucide-react'
 import type { User } from '@/types/database.types'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
@@ -181,19 +189,18 @@ export const UserDetailsPage = () => {
       />
 
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent className="md:max-w-[60%]! lg:max-w-[40%]!">
-          <DrawerHeader className="p-0">
-            <div className="bg-accent flex items-center justify-between p-2">
-              <DrawerTitle className="text-lg font-semibold">
+        <DrawerContent className="w-full! bg-neutral-50 md:max-w-[40%]! lg:max-w-[35%]!">
+          <DrawerHeader className="border-b p-3">
+            <div className="flex items-center justify-between">
+              <DrawerTitle className="text-ui-lg! font-medium text-neutral-900">
                 {isEditing || directEditUser ? 'Edit User' : 'User Details'}
               </DrawerTitle>
-              <div className="flex gap-2">
-                <DrawerClose asChild onClick={handleClose}>
-                  <Button variant="ghost" size="icon" className="hover:bg-red-500 hover:text-white">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DrawerClose>
-              </div>
+              <DrawerClose asChild>
+                <Button variant="ghost" size="icon" className="hover:bg-neutral-200 hover:text-neutral-900">
+                  <X className="h-4 w-4" />
+                </Button>
+              </DrawerClose>
+              <DrawerDescription className="sr-only">View or edit user information</DrawerDescription>
             </div>
           </DrawerHeader>
 
@@ -202,62 +209,65 @@ export const UserDetailsPage = () => {
               {!isEditing && !directEditUser ? (
                 <>
                   {/* VIEW MODE */}
-                  <div className="relative h-[calc(100vh-130px)] space-y-5! overflow-y-auto p-4">
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Avatar</FieldLegend>
-                        <FieldDescription className="text-foreground">
-                          <img
-                            src={user?.avatar_url || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user?.name}
-                            alt={user?.name}
-                            className="h-20 w-20 rounded-lg object-cover"
-                          />
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Name</FieldLegend>
-                        <FieldDescription className="text-foreground flex items-baseline justify-between">
-                          {user?.name}
-                          <span className={`ml-5 flex rounded-full bg-blue-100 px-2 py-1.5 text-xs/2 text-blue-700`}>
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
+                    {/* PROFILE CARD */}
+                    <div className="bg-card shadow-sms mr-auto ml-auto flex max-w-xs flex-col items-center space-y-4 rounded-2xl p-4 shadow-xl shadow-slate-900/10 md:p-5">
+                      <div className="flex items-center">
+                        <img
+                          src={user?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
+                          alt={user?.name}
+                          className="size-32 rounded-xl border border-neutral-200 object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-1 flex-col items-center space-y-0">
+                        <div className="flex items-center space-x-4">
+                          <h2 className="text-ui-sm font-medium text-neutral-900 capitalize">{user?.name}</h2>
+                          <span className="rounded-full border bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600 uppercase">
                             {user?.role}
                           </span>
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
+                        </div>
+                        <p className="text-ui-sm text-neutral-600">{user?.email}</p>
+                      </div>
+                    </div>
 
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2">Email</FieldLegend>
-                        <FieldDescription className="text-foreground">{user?.email}</FieldDescription>
-                      </FieldSet>
-                    </Field>
-
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                          <CalendarClock size={16} className="mr-1" />
+                    {/* Created At Updated At */}
+                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                      <div className="flex-1 space-y-2">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarClock size={16} />
                           Created At
-                        </FieldLegend>
-                        <FieldDescription className="text-foreground">
-                          {user?.created_at && new Date(user.created_at).toLocaleString()}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
-
-                    <Field>
-                      <FieldSet>
-                        <FieldLegend className="text-foreground mb-2 flex items-center text-sm!">
-                          <CalendarClock size={16} className="mr-1" />
-                          Last Updated
-                        </FieldLegend>
-                        <FieldDescription className="text-foreground">
-                          {user?.updated_at && new Date(user.updated_at).toLocaleString()}
-                        </FieldDescription>
-                      </FieldSet>
-                    </Field>
+                        </div>
+                        <div className="text-ui-sm text-neutral-900">
+                          {user?.created_at &&
+                            new Date(user?.created_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                        </div>
+                      </div>
+                      <div className="h-10 w-px bg-neutral-200/70" />
+                      <div className="flex-1 space-y-2">
+                        <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
+                          <CalendarClock size={16} />
+                          Updated At
+                        </div>
+                        <div className="text-ui-sm text-neutral-900">
+                          {user?.updated_at &&
+                            new Date(user?.updated_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <DrawerFooter className="border-t">
@@ -266,12 +276,17 @@ export const UserDetailsPage = () => {
                         variant="outline"
                         onClick={() => setDeleteDialogOpen(true)}
                         size={'lg'}
-                        className="flex-1 border-red-200"
+                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         <Trash2 />
                         Delete User
                       </Button>
-                      <Button onClick={handleEdit} variant={'outline'} size={'lg'} className="flex-1">
+                      <Button
+                        onClick={handleEdit}
+                        variant={'outline'}
+                        size={'lg'}
+                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-[0.98]"
+                      >
                         <SquarePen />
                         Edit User
                       </Button>
@@ -280,111 +295,115 @@ export const UserDetailsPage = () => {
                 </>
               ) : (
                 /* EDIT MODE */
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <div className="h-[calc(100vh-130px)] space-y-4 overflow-y-auto p-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {serverError && (
                       <Alert variant="destructive">
                         <AlertDescription>{serverError}</AlertDescription>
                       </Alert>
                     )}
+                    <div className="flex flex-1 gap-4">
+                      <div className="w-full space-y-2">
+                        <Label htmlFor="name">
+                          Name <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          {...register('name')}
+                          id="name"
+                          placeholder="User name"
+                          className={`bg-white ${errors.name ? 'border-red-500' : ''}`}
+                          disabled={isSubmitting}
+                        />
+                        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                      </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="name">
-                        Name <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        {...register('name')}
-                        id="name"
-                        placeholder="User name"
-                        className={errors.name ? 'border-red-500' : ''}
-                        disabled={isSubmitting}
-                      />
-                      {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                      <div className="w-full space-y-2">
+                        <Label htmlFor="email">
+                          Email <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          {...register('email')}
+                          id="email"
+                          type="email"
+                          placeholder="user@example.com"
+                          className={`bg-white ${errors.email ? 'border-red-500' : ''}`}
+                          disabled={isSubmitting}
+                        />
+                        {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                      </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="email">
-                        Email <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        {...register('email')}
-                        id="email"
-                        type="email"
-                        placeholder="user@example.com"
-                        className={errors.email ? 'border-red-500' : ''}
-                        disabled={isSubmitting}
-                      />
-                      {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-                    </div>
-
-                    {/* Avatar Upload */}
-                    <div className="space-y-2">
-                      <Label htmlFor="avatar">Avatar (Optional)</Label>
-                      <div className="flex flex-col gap-3">
-                        {/* Current Avatar Preview */}
-                        {user?.avatar_url && !avatarPreview && (
-                          <div className="relative h-20 w-20">
-                            <img
-                              src={user.avatar_url}
-                              alt={user.name}
-                              className="h-full w-full rounded-lg object-cover"
+                    <div className="flex flex-1 gap-4">
+                      <div className="w-full space-y-2">
+                        <Label htmlFor="avatar">Avatar (Optional)</Label>
+                        <div className="flex flex-col gap-3">
+                          {/* File Input */}
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="file"
+                              id="avatar"
+                              accept="image/*"
+                              onChange={handleAvatarChange}
+                              disabled={isSubmitting}
+                              className="cursor-pointe bg-white"
                             />
                           </div>
-                        )}
 
-                        {/* New Avatar Preview */}
-                        {avatarPreview && (
-                          <div className="relative h-20 w-20">
-                            <img
-                              src={avatarPreview}
-                              alt="Avatar preview"
-                              className="h-full w-full rounded-lg object-cover"
-                            />
-                            <button
-                              type="button"
-                              onClick={clearAvatar}
-                              className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-                            >
-                              <X className="h-4 w-4" />
-                            </button>
-                          </div>
-                        )}
+                          {/* Help Text */}
+                          <p className="text-ui-xs text-neutral-400">
+                            Max 5MB. Supported formats: JPEG, PNG, GIF, WebP
+                          </p>
 
-                        {/* File Input */}
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="file"
-                            id="avatar"
-                            accept="image/*"
-                            onChange={handleAvatarChange}
-                            disabled={isSubmitting}
-                            className="cursor-pointer"
-                          />
-                          <Upload className="h-4 w-4 text-gray-400" />
+                          {/* Current Avatar Preview */}
+                          {user?.avatar_url && !avatarPreview && (
+                            <div className="relative mt-2 h-32 w-32">
+                              <img
+                                src={user.avatar_url}
+                                alt={user.name}
+                                className="h-full w-full rounded-2xl border object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {/* New Avatar Preview */}
+                          {avatarPreview && (
+                            <div className="relative mt-2 h-32 w-32">
+                              <img
+                                src={avatarPreview}
+                                alt="Avatar preview"
+                                className="h-full w-full rounded-2xl border object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={clearAvatar}
+                                className="absolute -top-3 -right-3 rounded-full border bg-neutral-100 p-1 text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900"
+                              >
+                                <X className="size-4" />
+                              </button>
+                            </div>
+                          )}
                         </div>
-
-                        <p className="text-xs text-gray-500">Max 5MB. Supported formats: JPEG, PNG, GIF, WebP</p>
                       </div>
                       {errors.avatar && <p className="text-sm text-red-500">{errors.avatar.message as string}</p>}
-                    </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="role">Role</Label>
-                      <Select
-                        value={selectedRole || ''}
-                        onValueChange={(value) => setValue('role', value as any)}
-                        disabled={isSubmitting}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="user">User</SelectItem>
-                          <SelectItem value="manager">Manager</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
+                      <div className="w-full space-y-2">
+                        <Label htmlFor="role">Role</Label>
+                        <Select
+                          value={selectedRole || ''}
+                          onValueChange={(value) => setValue('role', value as any)}
+                          disabled={isSubmitting}
+                        >
+                          <SelectTrigger className="w-full bg-white">
+                            <SelectValue placeholder="Select role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="manager">Manager</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {errors.role && <p className="text-sm text-red-500">{errors.role.message}</p>}
+                      </div>
                     </div>
                   </div>
 
@@ -396,7 +415,7 @@ export const UserDetailsPage = () => {
                         variant="outline"
                         onClick={handleCancelEdit}
                         disabled={isSubmitting}
-                        className="flex-1"
+                        className="text-ui-sm w-full flex-1 font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         Cancel
                       </Button>
@@ -404,7 +423,7 @@ export const UserDetailsPage = () => {
                         size={'lg'}
                         type="submit"
                         disabled={isSubmitting}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
                       >
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                       </Button>

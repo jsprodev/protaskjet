@@ -227,7 +227,7 @@ export const TaskDetailsPage = () => {
             <>
               {!isEditing && !directEditTask ? (
                 <>
-                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
                       <div className="flex items-start justify-between">
                         <h3 className="text-ui-md font-medium text-neutral-900">{task?.title}</h3>
@@ -304,7 +304,7 @@ export const TaskDetailsPage = () => {
 
                     {/* Created At Updated At */}
                     <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
-                      <div className="flex-1 space-y-1">
+                      <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarClock size={16} />
                           Created At
@@ -368,7 +368,7 @@ export const TaskDetailsPage = () => {
               ) : (
                 /* EDIT MODE */
                 <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
-                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6 lg:space-y-8 lg:p-8">
+                  <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {/* Server Error */}
                     {serverError && (
                       <Alert variant="destructive">

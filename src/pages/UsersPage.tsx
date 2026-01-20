@@ -135,7 +135,7 @@ export const UsersPage = () => {
           )
         },
         cell: ({ row }) => (
-          <span className="text-ui-xs rounded-full border border-neutral-200 px-2.5 py-1 font-medium text-neutral-700">
+          <span className="rounded-full border bg-neutral-100 px-2 py-1 text-[11px] font-medium text-neutral-600 uppercase">
             {row.getValue('role')}
           </span>
         ),
