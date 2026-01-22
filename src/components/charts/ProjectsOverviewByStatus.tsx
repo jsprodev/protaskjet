@@ -1,11 +1,19 @@
-import { Bar, BarChart, Cell, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts'
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart'
+import { Pie, PieChart, ResponsiveContainer, Cell } from 'recharts'
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart'
 import { useProjects } from '@/context/ProjectsContext'
+import { FolderKanban } from 'lucide-react'
 
 export const ProjectsOverviewByStatus = () => {
   const { projects } = useProjects()
 
-  const projectsByStatus = projects.reduce((acc: any, project: any) => {
+  const projectsByStatus = projects.reduce((acc: Record<string, number>, project) => {
     acc[project.status] = (acc[project.status] || 0) + 1
     return acc
   }, {})
@@ -16,92 +24,82 @@ export const ProjectsOverviewByStatus = () => {
   }))
 
   const chartConfig = {
-    count: { label: 'Count' },
-    active: { label: 'Active', color: 'var(--status-active)' },
-    'on-hold': { label: 'On Hold', color: 'var(--status-on-hold)' },
-    completed: { label: 'Completed', color: 'var(--status-completed)' },
-    archived: { label: 'Archived', color: 'var(--status-archived)' },
+    count: {
+      label: 'Count',
+    },
+    active: {
+      label: 'Active',
+      color: 'var(--status-active)',
+    },
+    'on-hold': {
+      label: 'On Hold',
+      color: 'var(--status-on-hold)',
+    },
+    completed: {
+      label: 'Completed',
+      color: 'var(--status-completed)',
+    },
+    archived: {
+      label: 'Archived',
+      color: 'var(--status-archived)',
+    },
   } satisfies ChartConfig
 
   const getStatusColor = (status: string): string => {
-    return chartConfig[status as keyof typeof chartConfig]?.color || 'var(--status-active)'
+    return chartConfig[status as keyof typeof chartConfig]?.color || '#06b6d4'
   }
+
   return (
-    <div className="flex flex-wrap rounded-2xl bg-white p-4 shadow-xl shadow-slate-900/10">
-      <h3 className="w-full text-base font-semibold text-slate-600">Projects Overview</h3>
-      {/* <p className="mt-1 w-full text-xs text-slate-600">Distribution by status</p> */}
+    <div className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-neutral-300 hover:shadow-md">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
+          <FolderKanban className="h-5 w-5 text-blue-500" />
+        </div>
+        <div>
+          <h3 className="text-ui-md font-semibold text-neutral-900">Projects by Status</h3>
+          <p className="text-ui-xs text-neutral-500">Distribution across all projects</p>
+        </div>
+      </div>
 
-      <ChartContainer config={chartConfig} className="h-72 w-full">
+      <ChartContainer config={chartConfig} className="h-70">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={projectsByStatusArray}
-            layout="vertical"
-            margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
-            accessibilityLayer
-            barSize={40}
-          >
-            {/* <CartesianGrid strokeDasharray="2 2" stroke="rgba(0,0,0,0.1)" vertical={false} /> */}
-
-            <XAxis
-              type="number"
-              stroke="rgba(0,0,0,0.1)"
-              style={{ fontSize: '12px' }}
-              allowDecimals={false}
-              tick={{ fill: '#64748b' }}
-            />
-
-            <YAxis
-              dataKey="status"
-              type="category"
-              tickLine={false}
-              axisLine={false}
-              width={90}
-              tick={{ fontSize: '12px', fill: '#64748b', fontWeight: 500 }}
-              tickFormatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label || value}
-            />
-
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  hideLabel
-                  className="rounded-md border border-slate-200 bg-white p-2 shadow-lg"
-                  formatter={(value, name, item) => {
-                    return (
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="h-3 w-3 flex-shrink-0 rounded-full"
-                          style={{ backgroundColor: getStatusColor(item.payload.status) }}
-                        />
-                        <div className="flex items-center gap-3">
-                          <span className="font-medium text-slate-900 capitalize">{item.payload.status}</span>
-                          <span className="font-bold text-slate-900">{value}</span>
-                        </div>
-                      </div>
-                    )
-                  }}
-                />
-              }
-            />
-
-            <Bar dataKey="count" fill="#3b82f6" radius={[0, 8, 8, 0]} animationDuration={800}>
+          <PieChart>
+            <ChartTooltip content={<ChartTooltipContent hideLabel className="rounded-md p-2" />} />
+            <Pie
+              data={projectsByStatusArray}
+              dataKey="count"
+              nameKey="status"
+              outerRadius={100}
+              labelLine={false}
+              opacity={0.9}
+              label={({ payload, ...props }) => {
+                return (
+                  <text
+                    cx={props.cx}
+                    cy={props.cy}
+                    x={props.x}
+                    y={props.y}
+                    textAnchor={props.textAnchor}
+                    dominantBaseline={props.dominantBaseline}
+                    fill="white"
+                    className="text-sm font-semibold"
+                  >
+                    {payload.count}
+                  </text>
+                )
+              }}
+            >
               {projectsByStatusArray.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getStatusColor(entry.status)} opacity={0.85} />
+                <Cell key={`cell-${index}`} fill={getStatusColor(entry.status)} />
               ))}
-            </Bar>
-          </BarChart>
+            </Pie>
+            <ChartLegend
+              content={<ChartLegendContent nameKey="status" />}
+              className="translate-y-0 flex-wrap gap-x-3 text-xs text-neutral-600 *:justify-center"
+            />
+          </PieChart>
         </ResponsiveContainer>
       </ChartContainer>
-
-      {/* Stats Footer */}
-      {/* <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4">
-        <div className="text-xs text-slate-500">
-          Total Projects:{' '}
-          <span className="font-semibold text-slate-900">
-            {projectsByStatusArray.reduce((sum, item) => sum + item.count, 0)}
-          </span>
-        </div>
-      </div> */}
     </div>
   )
 }

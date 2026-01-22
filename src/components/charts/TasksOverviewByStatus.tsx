@@ -8,11 +8,12 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart'
 import { useTasks } from '@/context/TasksContext'
+import { ListTodo } from 'lucide-react'
 
 export const TasksOverviewByStatus = () => {
   const { tasks } = useTasks()
 
-  const tasksByStatus = tasks.reduce((acc: any, task: any) => {
+  const tasksByStatus = tasks.reduce((acc: Record<string, number>, task) => {
     acc[task.status] = (acc[task.status] || 0) + 1
     return acc
   }, {})
@@ -53,12 +54,18 @@ export const TasksOverviewByStatus = () => {
   }
 
   return (
-    <div className="flex flex-col rounded-2xl bg-white p-4 shadow-xl shadow-slate-900/10">
-      <div className="mb-6">
-        <h3 className="text-md text-center text-slate-600">Tasks Overview</h3>
+    <div className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-neutral-300 hover:shadow-md">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
+          <ListTodo className="h-5 w-5 text-blue-500" />
+        </div>
+        <div>
+          <h3 className="text-ui-md font-semibold text-neutral-900">Tasks by Status</h3>
+          <p className="text-ui-xs text-neutral-500">Distribution across all tasks</p>
+        </div>
       </div>
 
-      <ChartContainer config={chartConfig} className="h-80">
+      <ChartContainer config={chartConfig} className="h-70">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel className="rounded-md p-2" />} />
@@ -68,8 +75,7 @@ export const TasksOverviewByStatus = () => {
               nameKey="status"
               outerRadius={100}
               labelLine={false}
-              opacity={0.8}
-              // label
+              opacity={0.9}
               label={({ payload, ...props }) => {
                 return (
                   <text
@@ -79,7 +85,8 @@ export const TasksOverviewByStatus = () => {
                     y={props.y}
                     textAnchor={props.textAnchor}
                     dominantBaseline={props.dominantBaseline}
-                    fill="hsla(var(--foreground))"
+                    fill="white"
+                    className="text-sm font-semibold"
                   >
                     {payload.count}
                   </text>
@@ -92,7 +99,7 @@ export const TasksOverviewByStatus = () => {
             </Pie>
             <ChartLegend
               content={<ChartLegendContent nameKey="status" />}
-              className="translate-y-0 flex-wrap gap-x-3 text-[12px] text-slate-600 *:justify-center"
+              className="translate-y-0 flex-wrap gap-x-3 text-xs text-neutral-600 *:justify-center"
             />
           </PieChart>
         </ResponsiveContainer>

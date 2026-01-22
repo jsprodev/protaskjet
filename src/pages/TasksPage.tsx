@@ -5,7 +5,7 @@ import {
   Pencil,
   Plus,
   Eye,
-  CheckSquare,
+  ListTodo,
   ArrowUp,
   ArrowRight,
   ArrowDown,
@@ -390,7 +390,7 @@ export const TasksPage = () => {
         {/* TABLE */}
         {tasks.length ? (
           <div className="flex flex-col gap-8">
-            <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
+            <div className="rounded-xl border border-neutral-200 bg-white p-5">
               <div className="flex flex-wrap gap-4">
                 <Field className="min-w-[220px] flex-1 gap-1">
                   <FieldLabel>Search</FieldLabel>
@@ -463,7 +463,7 @@ export const TasksPage = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
+              <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white">
                 <Table className="table-fixed">
                   <TableHeader className="bg-neutral-50">
                     {table.getHeaderGroups().map((hg) => (
@@ -479,7 +479,7 @@ export const TasksPage = () => {
 
                   <TableBody>
                     {table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id} className="border-b border-neutral-200 bg-white hover:bg-neutral-50">
+                      <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell
                             key={cell.id}
@@ -540,7 +540,7 @@ export const TasksPage = () => {
         ) : (
           <div className="flex justify-center rounded-xl border bg-neutral-50 p-12">
             <div className="text-center">
-              <CheckSquare className="mx-auto mb-3 h-10 w-10 text-neutral-400" />
+              <ListTodo className="mx-auto mb-3 h-10 w-10 text-neutral-400" />
               <h3 className="text-ui-md font-medium text-neutral-900">No tasks yet</h3>
               <p className="text-ui-sm text-neutral-500">Create your first task to get started</p>
             </div>

@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { CheckSquare, FolderKanban, PlusSquare, Users } from 'lucide-react'
+import { ListTodo, FolderKanban, PlusSquare, Users } from 'lucide-react'
 import { useModal } from '@/context/ModalContext'
 // import { menuItems } from '@/config/menu.config'
 
@@ -29,7 +29,7 @@ export const AddDropDownMenu = () => {
           <FolderKanban className="text-primary" /> Project
         </DropdownMenuItem>
         <DropdownMenuItem onClick={openCreateTask}>
-          <CheckSquare className="text-primary" /> Task
+          <ListTodo className="text-primary" /> Task
         </DropdownMenuItem>
         <DropdownMenuItem onClick={openCreateUser}>
           <Users className="text-primary" /> User

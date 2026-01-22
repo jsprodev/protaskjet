@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderKanban, CheckSquare, Users, Settings2 } from 'lucide-react'
+import { LayoutDashboard, FolderKanban, ListTodo, Users, Settings2 } from 'lucide-react'
 
 export const menuItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -11,7 +11,7 @@ export const menuItems = [
   {
     title: 'Tasks',
     url: '/tasks',
-    icon: CheckSquare,
+    icon: ListTodo,
     createUrl: '/tasks/new',
   },
   {
@@ -25,6 +25,6 @@ export const menuItems = [
 
 export const quickCreateMenu = [
   { title: 'Project', url: '/projects/new', icon: FolderKanban },
-  { title: 'Task', url: '/tasks/new', icon: CheckSquare },
+  { title: 'Task', url: '/tasks/new', icon: ListTodo },
   { title: 'User', url: '/users/new', icon: Users },
 ]

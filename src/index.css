@@ -130,9 +130,9 @@
 
   /* Project Status */
   --status-active: theme(colors.blue.600);
-  --status-on-hold: theme(colors.slate.600);
+  --status-on-hold: theme(colors.amber.600);
   --status-completed: theme(colors.green.600);
-  --status-archived: theme(colors.purple.600);
+  --status-archived: theme(colors.neutral.500);
 
   /* Task Status */
   --status-todo: theme(colors.slate.600);

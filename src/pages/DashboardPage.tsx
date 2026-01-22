@@ -1,22 +1,31 @@
+import { TaskPriorityDistribution } from '@/components/charts/TaskPriorityDistribution'
 import { ProjectsOverviewByStatus } from '../components/charts/ProjectsOverviewByStatus'
 import { TasksOverviewByStatus } from '@/components/charts/TasksOverviewByStatus'
-import { TotalProjects } from '@/components/charts/TotalProjects'
+import { TotalProjectsCard } from '@/components/charts/TotalProjects'
+import { TotalTasksCard } from '@/components/charts/TotalTasks'
+import { TotalUsersCard } from '@/components/charts/TotalUsers'
+import { UsersOverview } from '@/components/charts/UsersOverview'
+import { ProjectProgressChart } from '@/components/charts/ProjectProgressChart'
+import { RecentActivityFeed } from '@/components/charts/RecentActivityFeed'
 
 export const DashboardPage = () => {
   return (
-    <div className="flex flex-row flex-wrap gap-8">
-      <div className="flex w-full flex-wrap gap-8">
-        <TotalProjects />
-        <TotalProjects />
-        <TotalProjects />
+    <div className="space-y-6">
+      {/* Stats Row */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <TotalProjectsCard />
+        <TotalTasksCard />
+        <TotalUsersCard />
       </div>
-      <div className="flex flex-1 flex-wrap gap-8">
-        <div className="flex-1">
-          <ProjectsOverviewByStatus />
-        </div>
-        <div className="flex-1">
-          <TasksOverviewByStatus />
-        </div>
+
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <ProjectsOverviewByStatus />
+        <TasksOverviewByStatus />
+        <UsersOverview />
+        <TaskPriorityDistribution />
+        <ProjectProgressChart />
+        <RecentActivityFeed />
       </div>
     </div>
   )

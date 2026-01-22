@@ -88,11 +88,11 @@ export const ProjectsPage = () => {
         )}
 
         {/* Projects Grid */}
-        <div className="density-compacts grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="density-compact grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
           {projects.map((project) => (
             <div
               key={project.id}
-              className="relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-xl hover:shadow-neutral-900/10"
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-xl hover:shadow-neutral-900/10"
             >
               {/* Accent Bar */}
               <div
@@ -111,19 +111,17 @@ export const ProjectsPage = () => {
                   gap: 'var(--space-section-gap)',
                 }}
               >
-                <h2 className="text-ui-md min-w-0 truncate font-semibold tracking-tight text-neutral-900">
-                  {project.name}
-                </h2>
+                <h2 className="text-ui-md min-w-0 truncate font-medium text-neutral-900">{project.name}</h2>
 
                 <div
-                  className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium whitespace-nowrap uppercase"
+                  className="flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap uppercase"
                   style={{
                     backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 12%, white)`,
                     color: `var(--status-${project.status})`,
                   }}
                 >
                   <span
-                    className="h-1.5 w-1.5 rounded-full"
+                    className="size-1 rounded-full"
                     style={{ backgroundColor: `var(--status-${project.status})` }}
                   />
                   {project.status}
@@ -140,8 +138,8 @@ export const ProjectsPage = () => {
                 }}
               >
                 <p
-                  className={`text-ui-sm min-h-[4.2rem] ${
-                    project.description ? 'line-clamp-3 text-neutral-600' : 'text-neutral-400 italic'
+                  className={`text-ui-sm min-h-[5.2rem] ${
+                    project.description ? 'line-clamp-4 text-neutral-600' : 'text-neutral-400 italic'
                   }`}
                 >
                   {project.description || 'No description provided'}

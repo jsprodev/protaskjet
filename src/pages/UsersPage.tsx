@@ -302,7 +302,7 @@ export const UsersPage = () => {
 
         {users.length ? (
           <div className="flex flex-col gap-8">
-            <div className="rounded-xl border border-neutral-300 bg-neutral-50 p-5">
+            <div className="rounded-xl border border-neutral-200 bg-white p-5">
               <div className="flex flex-wrap gap-4">
                 <Field className="min-w-[220px] flex-1 gap-1">
                   <FieldLabel>Search:</FieldLabel>
@@ -342,7 +342,7 @@ export const UsersPage = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="min-h-[546px]s w-full overflow-x-auto rounded-xl border border-neutral-300 bg-white shadow-sm shadow-slate-900/10">
+              <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white">
                 <Table className="table-fixed">
                   <TableHeader className="bg-neutral-50">
                     {table.getHeaderGroups().map((headerGroup) => (
