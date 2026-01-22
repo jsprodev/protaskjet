@@ -18,13 +18,15 @@ export const TaskPriorityDistribution = () => {
     return acc
   }, {})
 
-  const priorityOrder = ['urgent', 'high', 'medium', 'low']
+  const priorityOrder = ['low', 'medium', 'high', 'urgent']
   const tasksByPriorityArray = priorityOrder
     .filter((priority) => tasksByPriority[priority] > 0)
     .map((priority) => ({
       priority,
       count: tasksByPriority[priority],
     }))
+
+  const totalTasks = tasks.length
 
   const chartConfig = {
     count: { label: 'Tasks' },
@@ -78,8 +80,8 @@ export const TaskPriorityDistribution = () => {
         )} */}
       </div>
 
-      {/* Pie chart */}
-      <ChartContainer config={chartConfig} className="h-72">
+      {/* Semicircle Gauge */}
+      <ChartContainer config={chartConfig} className="h-60">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent hideLabel className="rounded-md p-2 shadow-lg" />} />
@@ -88,13 +90,13 @@ export const TaskPriorityDistribution = () => {
               dataKey="count"
               nameKey="priority"
               cx="50%"
-              cy="50%"
+              cy="70%"
+              startAngle={180}
+              endAngle={0}
               innerRadius={70}
-              outerRadius={100}
+              outerRadius={110}
               labelLine={false}
-              paddingAngle={3}
-              cornerRadius={6}
-              opacity={0.95}
+              paddingAngle={2}
               label={({ payload, ...props }) => (
                 <text
                   x={props.x}
@@ -112,9 +114,19 @@ export const TaskPriorityDistribution = () => {
                 <Cell key={`cell-${index}`} fill={getPriorityColor(entry.priority)} />
               ))}
             </Pie>
+            {/* Center Label */}
+            <text x="50%" y="70%" textAnchor="middle" dominantBaseline="middle">
+              <tspan x="50%" dy="-0.5em" className="fill-neutral-900 text-3xl font-bold">
+                {totalTasks}
+              </tspan>
+              <tspan x="50%" dy="1.5em" className="fill-neutral-500 text-xs">
+                Total Tasks
+              </tspan>
+            </text>
+            {/* Legend inside PieChart */}
             <ChartLegend
               content={<ChartLegendContent nameKey="priority" />}
-              className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-neutral-600"
+              className="translate-y-0 flex-wrap gap-x-3 text-xs text-neutral-600 *:justify-center"
             />
           </PieChart>
         </ResponsiveContainer>

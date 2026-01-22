@@ -129,17 +129,17 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Project Status */
-  --status-active: theme(colors.blue.600);
-  --status-on-hold: theme(colors.amber.600);
-  --status-completed: theme(colors.green.600);
-  --status-archived: theme(colors.neutral.500);
+  --status-active: theme(colors.blue.500);
+  --status-on-hold: theme(colors.amber.500);
+  --status-completed: theme(colors.emerald.500);
+  --status-archived: theme(colors.neutral.400);
 
   /* Task Status */
-  --status-todo: theme(colors.slate.600);
-  --status-in-progress: theme(colors.blue.600);
-  --status-review: theme(colors.orange.600);
-  --status-done: theme(colors.green.600);
-  --status-blocked: theme(colors.rose.600);
+  --status-todo: theme(colors.neutral.500);
+  --status-in-progress: theme(colors.blue.500);
+  --status-review: theme(colors.amber.500);
+  --status-done: theme(colors.emerald.500);
+  --status-blocked: theme(colors.rose.500);
 
   /* Comfortable (default) spacing */
   --space-card-x: 1.5rem;

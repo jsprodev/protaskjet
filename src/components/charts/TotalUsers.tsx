@@ -13,7 +13,7 @@ export const TotalUsersCard = () => {
 
   return (
     <MetricCard
-      icon={<Users className="h-6 w-6 text-neutral-700" />}
+      icon={<Users className="size-5" />}
       label="Total Users"
       value={users.length}
       footer={

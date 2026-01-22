@@ -57,12 +57,8 @@ export const ProjectProgressChart = () => {
                     {project.completedTasks} of {project.totalTasks} tasks completed
                   </p>
                 </div>
-                <div
-                  className={`ml-3 flex h-8 w-12 items-center justify-center rounded-lg ${getProgressBg(
-                    project.completion
-                  )}`}
-                >
-                  <span className="text-ui-sm font-medium text-neutral-900 tabular-nums">{project.completion}%</span>
+                <div className={`ml-3 flex h-8 w-12 items-end justify-center rounded-lg`}>
+                  <span className="text-ui-xs font-medium text-neutral-900 tabular-nums">{project.completion}%</span>
                 </div>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">

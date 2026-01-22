@@ -41,8 +41,8 @@ export const RecentActivityFeed = () => {
       title: task.title,
       description,
       timestamp: task.updated_at || task.created_at,
-      icon: <ListTodo className="h-4 w-4 text-blue-600" />,
-      iconBg: 'bg-blue-100',
+      icon: <ListTodo className="h-4.5 w-4.5 text-neutral-600" />,
+      iconBg: 'bg-neutral-100',
     })
   })
 
@@ -54,8 +54,8 @@ export const RecentActivityFeed = () => {
       title: project.name,
       description: `Project: ${project.status.replace('-', ' ')}`,
       timestamp: project.updated_at || project.created_at,
-      icon: <FolderKanban className="h-4 w-4 text-purple-600" />,
-      iconBg: 'bg-purple-100',
+      icon: <FolderKanban className="h-4.5 w-4.5 text-neutral-600" />,
+      iconBg: 'bg-neutral-100',
     })
   })
 
@@ -67,8 +67,8 @@ export const RecentActivityFeed = () => {
       title: user.name,
       description: `User joined as ${user.role}`,
       timestamp: user.created_at,
-      icon: <Users className="h-4 w-4 text-cyan-600" />,
-      iconBg: 'bg-cyan-100',
+      icon: <Users className="h-4.5 w-4.5 text-neutral-600" />,
+      iconBg: 'bg-neutral-100',
     })
   })
 
@@ -93,16 +93,18 @@ export const RecentActivityFeed = () => {
           recentActivities.map((activity) => (
             <div
               key={activity.id}
-              className="flex items-center gap-3 rounded-lg border border-neutral-100 bg-neutral-50 p-2 transition-colors hover:bg-neutral-100"
+              className="flex items-center gap-2 rounded-lg border border-neutral-100 bg-neutral-50 p-0"
             >
-              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${activity.iconBg}`}>
+              <div
+                className={`flex h-full w-11 shrink-0 items-center justify-center rounded-lg rounded-tr-none rounded-br-none ${activity.iconBg}`}
+              >
                 {activity.icon}
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-ui-sm truncate font-normal text-neutral-900">{activity.title}</p>
+              <div className="min-w-0 flex-1 py-2">
+                <p className="text-ui-sm truncate font-medium text-neutral-900">{activity.title}</p>
                 <p className="text-ui-xs text-neutral-500">{activity.description}</p>
               </div>
-              <span className="shrink-0 text-xs text-neutral-400">
+              <span className="text-ui-xs shrink-0 px-3 text-neutral-500">
                 {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}
               </span>
             </div>

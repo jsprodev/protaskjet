@@ -12,7 +12,7 @@ export const TotalTasksCard = () => {
 
   return (
     <MetricCard
-      icon={<ListTodo className="size-6 text-neutral-600" />}
+      icon={<ListTodo className="size-5" />}
       label="Total Tasks"
       value={total}
       footer={

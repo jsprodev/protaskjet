@@ -14,7 +14,7 @@ export const TotalProjectsCard = () => {
 
   return (
     <MetricCard
-      icon={<FolderKanban className="size-6 text-neutral-600" />}
+      icon={<FolderKanban className="size-5" />}
       label="Total Projects"
       value={projects.length}
       footer={
