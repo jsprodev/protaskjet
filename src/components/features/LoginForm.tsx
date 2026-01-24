@@ -33,71 +33,92 @@ export const LoginForm = () => {
     const { error } = await signIn(email, password)
 
     if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        setServerError('Invalid email or password')
-      } else {
-        setServerError(error.message)
-      }
+      setServerError(error.message.includes('Invalid login credentials') ? 'Invalid email or password' : error.message)
     } else {
-      // ✅ Success - navigate to dashboard
       navigate('/dashboard')
     }
   }
 
   return (
-    <>
-      <h1 className="text-2xl font-bold">Login</h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-ui-xl font-semibold text-neutral-900">Welcome</h1>
+        <p className="text-ui-sm text-neutral-500">Sign in to manage your projects and tasks</p>
+      </div>
 
+      {/* Error */}
       {serverError && (
-        <Alert className="border-red-500 bg-red-50">
-          <AlertDescription className="text-red-700">{serverError}</AlertDescription>
+        <Alert className="rounded-lg border border-rose-200 bg-rose-50">
+          <AlertDescription className="text-ui-sm text-rose-700">{serverError}</AlertDescription>
         </Alert>
       )}
 
+      {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <Label htmlFor="email" className="mb-1">
+        {/* Email */}
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-ui-xs font-medium text-neutral-600">
             Email
           </Label>
+
           <Input
             {...register('email')}
             id="email"
-            className={`h-10 ${errors.email ? 'border-red-500' : ''}`}
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
             disabled={isSubmitting}
+            className={`text-ui-sm h-10 rounded-lg ${
+              errors.email
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
           />
-          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+
+          {errors.email && <p className="text-ui-xs text-rose-600">{errors.email.message}</p>}
         </div>
 
-        <div>
-          <Label htmlFor="password" className="mb-1">
+        {/* Password */}
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-ui-xs font-medium text-neutral-600">
             Password
           </Label>
+
           <Input
             {...register('password')}
             id="password"
-            className={`h-10 ${errors.password ? 'border-red-500' : ''}`}
             type="password"
-            placeholder="Password"
+            placeholder="••••••••"
             autoComplete="current-password"
             disabled={isSubmitting}
+            className={`text-ui-sm h-10 rounded-lg ${
+              errors.password
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
           />
-          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
+
+          {errors.password && <p className="text-ui-xs text-rose-600">{errors.password.message}</p>}
         </div>
 
-        <Button className="h-10 w-full" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Logging in...' : 'Login'}
+        {/* CTA */}
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="text-ui-sm h-10 w-full rounded-lg bg-blue-500 font-medium text-white transition-all hover:bg-blue-600 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-blue-300/40 focus-visible:outline-none active:scale-[0.99] active:bg-blue-600 disabled:opacity-60 disabled:hover:shadow-none"
+        >
+          {isSubmitting ? 'Signing in…' : 'Sign in'}
         </Button>
       </form>
 
-      <p className="text-center text-sm text-gray-600">
-        Don't have an account?{' '}
-        <Link to="/signup" className="font-medium text-blue-600 hover:underline">
-          Sign up
+      {/* Footer */}
+      <p className="text-ui-xs text-center text-neutral-500">
+        Don’t have an account?{' '}
+        <Link to="/signup" className="font-medium text-neutral-900 hover:underline">
+          Create one
         </Link>
       </p>
-    </>
+    </div>
   )
 }

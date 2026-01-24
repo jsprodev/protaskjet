@@ -10,9 +10,16 @@ import { RecentActivityFeed } from '@/components/charts/RecentActivityFeed'
 
 export const DashboardPage = () => {
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-ui-xl font-semibold text-neutral-900">Dashboard</h1>
+          <p className="text-ui-sm text-neutral-500">Overview of your workspace</p>
+        </div>
+      </div>
+
       {/* Stats Row */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
         <TotalProjectsCard />
         <TotalTasksCard />
         <TotalUsersCard />

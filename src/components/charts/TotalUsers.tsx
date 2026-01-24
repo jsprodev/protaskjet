@@ -5,31 +5,72 @@ import { MetricCard } from '@/components/ui/metric-card'
 export const TotalUsersCard = () => {
   const { users } = useUsers()
 
-  // Count users by role
-  const usersByRole = users.reduce((acc: Record<string, number>, user) => {
-    acc[user.role] = (acc[user.role] || 0) + 1
-    return acc
-  }, {})
+  const total = users.length
+  const admins = users.filter((u) => u.role === 'admin').length
+  const managers = users.filter((u) => u.role === 'manager').length
+  const regularUsers = users.filter((u) => u.role === 'user').length
+
+  const adminPercent = total > 0 ? Math.round((admins / total) * 100) : 0
+  const managerPercent = total > 0 ? Math.round((managers / total) * 100) : 0
+  const userPercent = total > 0 ? Math.round((regularUsers / total) * 100) : 0
 
   return (
     <MetricCard
       icon={<Users className="size-5" />}
       label="Total Users"
-      value={users.length}
+      value={total}
       footer={
-        Object.keys(usersByRole).length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {Object.entries(usersByRole).map(([role, count]) => (
+        <div className="mt-3 space-y-3">
+          {/* Stacked Progress Bar */}
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-neutral-100">
+            {admins > 0 && (
               <div
-                key={role}
-                className="flex items-center justify-between gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-xs font-medium text-neutral-700"
-              >
-                <span className="capitalize">{role}</span>
-                <span className="font-semibold tabular-nums">{count}</span>
-              </div>
-            ))}
+                className="h-full bg-slate-500 transition-all duration-500 ease-out"
+                style={{ width: `${adminPercent}%` }}
+              />
+            )}
+            {managers > 0 && (
+              <div
+                className="h-full bg-slate-400 transition-all duration-500 ease-out"
+                style={{ width: `${managerPercent}%` }}
+              />
+            )}
+            {regularUsers > 0 && (
+              <div
+                className="h-full bg-slate-300 transition-all duration-500 ease-out"
+                style={{ width: `${userPercent}%` }}
+              />
+            )}
           </div>
-        )
+
+          {/* Role Breakdown */}
+          <div className="text-ui-xs flex flex-wrap justify-center gap-2 font-medium">
+            {admins > 0 && (
+              <div className="flex items-center gap-1.5 text-neutral-600">
+                <div className="h-2 w-2 rounded-full bg-slate-500" />
+                <span>
+                  {admins} Admin{admins !== 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+            {managers > 0 && (
+              <div className="flex items-center gap-1.5 text-neutral-600">
+                <div className="h-2 w-2 rounded-full bg-slate-400" />
+                <span>
+                  {managers} Manager{managers !== 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+            {regularUsers > 0 && (
+              <div className="flex items-center gap-1.5 text-neutral-600">
+                <div className="h-2 w-2 rounded-full bg-slate-300" />
+                <span>
+                  {regularUsers} User{regularUsers !== 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
       }
     />
   )

@@ -100,9 +100,9 @@ export const RecentActivityFeed = () => {
               >
                 {activity.icon}
               </div>
-              <div className="min-w-0 flex-1 py-2">
+              <div className="min-w-0 flex-1 py-1.5">
                 <p className="text-ui-sm truncate font-medium text-neutral-900">{activity.title}</p>
-                <p className="text-ui-xs text-neutral-500">{activity.description}</p>
+                <p className="text-ui-xs font-medium text-neutral-500">{activity.description}</p>
               </div>
               <span className="text-ui-xs shrink-0 px-3 text-neutral-500">
                 {formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true })}

@@ -53,7 +53,7 @@ export const ProjectProgressChart = () => {
               <div className="flex items-center justify-between">
                 <div className="min-w-0 flex-1">
                   <h4 className="text-ui-sm truncate font-medium text-neutral-900">{project.name}</h4>
-                  <p className="text-ui-xs text-neutral-500">
+                  <p className="text-ui-xs font-medium text-neutral-500">
                     {project.completedTasks} of {project.totalTasks} tasks completed
                   </p>
                 </div>

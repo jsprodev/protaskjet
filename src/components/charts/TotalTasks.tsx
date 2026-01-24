@@ -20,13 +20,13 @@ export const TotalTasksCard = () => {
           {/* Progress bar */}
           <div className="h-3 w-full overflow-hidden rounded-full bg-neutral-100">
             <div
-              className="h-full rounded-full bg-[var(--status-completed)] transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-green-500 transition-all duration-500 ease-out"
               style={{ width: `${completionRate}%` }}
             />
           </div>
 
           {/* Breakdown */}
-          <div className="text-ui-xs flex justify-between text-neutral-500 tabular-nums">
+          <div className="text-ui-xs flex justify-between font-medium text-neutral-500 tabular-nums">
             <span>
               {completed} done ({completionRate}%)
             </span>

@@ -88,7 +88,7 @@ export const ProjectsPage = () => {
         )}
 
         {/* Projects Grid */}
-        <div className="density-compact grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+        <div className="density-compact grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
           {projects.map((project) => (
             <div
               key={project.id}
