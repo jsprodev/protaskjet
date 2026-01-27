@@ -423,7 +423,7 @@ export const UserDetailsPage = () => {
                         size={'lg'}
                         type="submit"
                         disabled={isSubmitting}
-                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 rounded-lg border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-500 hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-500 active:bg-blue-500 disabled:cursor-not-allowed disabled:border-blue-300 disabled:bg-blue-300 disabled:text-white/80"
                       >
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                       </Button>

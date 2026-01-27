@@ -206,7 +206,7 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
+            className="text-ui-sm flex-1 border border-blue-600 bg-blue-600 text-white hover:border-blue-500 hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 active:scale-[0.98]"
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSubmitting ? 'Creating...' : 'Create User'}

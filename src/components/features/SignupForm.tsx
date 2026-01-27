@@ -157,14 +157,18 @@ export const SignupForm = () => {
           {errors.confirmPassword && <p className="text-ui-xs text-rose-600">{errors.confirmPassword.message}</p>}
         </div>
 
-        <Button className="h-10 w-full" type="submit" disabled={isSubmitting}>
+        <Button
+          className="text-ui-sm focus-visible:ring-offset-background h-10 w-full flex-1 rounded-lg border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-500 hover:bg-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-500 active:bg-blue-500 disabled:cursor-not-allowed disabled:border-blue-300 disabled:bg-blue-300 disabled:text-white/80"
+          type="submit"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? 'Creating Account...' : 'Sign Up'}
         </Button>
       </form>
 
       <p className="text-ui-sm text-center font-medium text-neutral-500">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-neutral-900 hover:underline">
+        <Link to="/login" className="font-medium text-blue-600 hover:underline">
           Log in
         </Link>
       </p>
