@@ -14,9 +14,22 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { X, SquarePen, CalendarClock, Trash2, CalendarIcon } from 'lucide-react'
+import {
+  X,
+  SquarePen,
+  CalendarClock,
+  Trash2,
+  CalendarIcon,
+  CheckCircle2,
+  Circle,
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  ShieldAlert,
+  CircleCheckBig,
+} from 'lucide-react'
 import type { Project } from '@/types/database.types'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { projectsApi } from '@/services/api/projects.api'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -28,7 +41,7 @@ import { format, parseISO } from 'date-fns'
 import { useProjects } from '@/context/ProjectsContext'
 import { toast } from 'sonner'
 import { AlertDialogBox } from '@/components/common/AlertDialogBox'
-// import { useTasks } from '@/context/TasksContext'
+import { useTasks } from '@/context/TasksContext'
 
 export const ProjectDetailsPage = () => {
   const [startDate, setStartDate] = useState<Date | undefined>()
@@ -40,13 +53,13 @@ export const ProjectDetailsPage = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const { updateProjects, deleteProject } = useProjects()
+  const { tasks } = useTasks()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false)
   const [openDrawer, setOpenDrawer] = useState<boolean>(true)
   const location = useLocation()
   const [directEditProject, setDirectEditProject] = useState<boolean>(location.state?.directEditProject ?? false)
-  // const { loadTasks } = useTasks()
 
   const {
     register,
@@ -57,6 +70,10 @@ export const ProjectDetailsPage = () => {
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(createProjectSchema),
   })
+
+  // Get tasks for this project
+  const projectTasks = tasks.filter((task) => task.project_id === id)
+  const completedTasks = projectTasks.filter((task) => task.status === 'done')
 
   // Fetch project by id
   const getProject = async (id: string) => {
@@ -141,7 +158,6 @@ export const ProjectDetailsPage = () => {
       deleteProject(project.id)
       handleClose()
       toast.success('Project deleted successfully.')
-      // loadTasks()
     } catch (err) {
       toast.dismiss(err instanceof Error ? err.message : 'Failed to delete project')
     }
@@ -177,9 +193,7 @@ export const ProjectDetailsPage = () => {
       />
 
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
-        {/* Apple/Linear drawer width */}
-        <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[50%]!">
-          {' '}
+        <DrawerContent className="w-full! bg-neutral-100 md:max-w-[70%]! lg:max-w-[50%]!">
           {/* HEADER */}
           <DrawerHeader className="border-b p-3">
             <div className="flex items-center justify-between">
@@ -201,11 +215,11 @@ export const ProjectDetailsPage = () => {
                 <>
                   <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {/* Project Name */}
-                    <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex items-start justify-between">
                         <h3 className="text-ui-md font-medium text-neutral-900">{project?.name}</h3>
                         <div
-                          className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium uppercase"
+                          className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium whitespace-nowrap uppercase"
                           style={{
                             backgroundColor: `color-mix(in oklab, var(--status-${project?.status}) 12%, white)`,
                             color: `var(--status-${project?.status})`,
@@ -226,7 +240,7 @@ export const ProjectDetailsPage = () => {
                     </div>
 
                     {/* Dates */}
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarIcon size={16} />
@@ -257,13 +271,89 @@ export const ProjectDetailsPage = () => {
                     </div>
 
                     {/* Tasks */}
-                    <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
-                      <h4 className="text-ui-xs mb-1 font-medium text-neutral-500 uppercase">Tasks</h4>
-                      <p className="text-ui-sm text-neutral-400 italic">No tasks yet</p>
+                    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
+                      {/* Header */}
+                      <div className="mb-4 flex items-center justify-between">
+                        <h4 className="text-ui-xs font-medium text-neutral-500 uppercase">Tasks</h4>
+
+                        <span className="text-ui-xs font-medium text-neutral-600">
+                          {projectTasks.length > 0 && (
+                            <>
+                              {completedTasks.length} / {projectTasks.length} completed
+                            </>
+                          )}
+                        </span>
+                      </div>
+
+                      {projectTasks.length > 0 ? (
+                        <div className="divide-y divide-neutral-100 rounded-xl border border-neutral-200 bg-white">
+                          {projectTasks.map((task) => (
+                            <Link
+                              key={task.id}
+                              to={`/tasks/${task.id}`}
+                              className="group flex flex-col items-start gap-1 p-3 transition-colors first:rounded-tl-xl first:rounded-tr-xl last:rounded-br-xl last:rounded-bl-xl hover:bg-neutral-50 md:flex-row md:items-center md:justify-between"
+                            >
+                              <div className="flex w-full min-w-0 items-center gap-3">
+                                {/* Status icon */}
+                                {task.status === 'done' ? (
+                                  <CircleCheckBig
+                                    className="h-4 w-4 shrink-0"
+                                    style={{ color: `var(--status-${task.status})` }}
+                                  />
+                                ) : (
+                                  <Circle className="h-4 w-4 shrink-0 text-neutral-300" />
+                                )}
+
+                                {/* Title - needs min-w-0 and flex-1 */}
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-ui-sm truncate font-normal">{task.title}</p>
+                                </div>
+                              </div>
+
+                              {/* Right-side meta */}
+                              <div className="flex items-center justify-end gap-1.5 max-md:w-full">
+                                {/* Status */}
+                                <span
+                                  className="rounded-md px-2.5 py-1 text-[11px] font-medium whitespace-nowrap uppercase"
+                                  style={{
+                                    backgroundColor: `color-mix(in oklab, var(--status-${task.status}) 12%, white)`,
+                                    color: `var(--status-${task.status})`,
+                                  }}
+                                >
+                                  {task.status.replace('-', ' ')}
+                                </span>
+
+                                {/* Priority */}
+                                <span className="text-ui-xs inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-2.5 py-1 text-neutral-700">
+                                  {task.priority === 'low' ? (
+                                    <>
+                                      <ArrowDown className="size-4 text-neutral-500" /> {task.priority}
+                                    </>
+                                  ) : task.priority === 'medium' ? (
+                                    <>
+                                      <ArrowRight className="size-4 text-neutral-500" /> {task.priority}
+                                    </>
+                                  ) : task.priority === 'high' ? (
+                                    <>
+                                      <ArrowUp className="size-4 text-neutral-500" /> {task.priority}
+                                    </>
+                                  ) : task.priority === 'urgent' ? (
+                                    <>
+                                      <ShieldAlert className="size-4 text-neutral-500" /> {task.priority}
+                                    </>
+                                  ) : null}
+                                </span>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-ui-sm text-neutral-400">No tasks added yet</p>
+                      )}
                     </div>
 
                     {/* Created At Updated At */}
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarClock size={13} />
@@ -307,7 +397,7 @@ export const ProjectDetailsPage = () => {
                         variant="outline"
                         onClick={() => setDeleteDialogOpen(true)}
                         size={'lg'}
-                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-[0.98]"
+                        className="text-ui-sm w-full flex-1 gap-2 rounded-lg p-2 hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         <Trash2 />
                         Delete Project
@@ -316,7 +406,7 @@ export const ProjectDetailsPage = () => {
                         onClick={handleEdit}
                         variant={'outline'}
                         size={'lg'}
-                        className="text-ui-sm w-full flex-1 gap-2 p-2 hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-[0.98]"
+                        className="text-ui-sm w-full flex-1 gap-2 rounded-lg p-2 hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         <SquarePen />
                         Edit Project
@@ -325,7 +415,7 @@ export const ProjectDetailsPage = () => {
                   </DrawerFooter>
                 </>
               ) : (
-                /* EDIT MODE */
+                /* EDIT MODE - keeping existing form code */
                 <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
                   <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {serverError && (
@@ -341,7 +431,7 @@ export const ProjectDetailsPage = () => {
                       </Label>
                       <Input
                         {...register('name')}
-                        className="bg-white"
+                        className="rounded-lg bg-white"
                         id="name"
                         placeholder="Project name"
                         disabled={isSubmitting}
@@ -358,7 +448,7 @@ export const ProjectDetailsPage = () => {
                         placeholder="Project description"
                         rows={8}
                         disabled={isSubmitting}
-                        className="bg-white"
+                        className="rounded-lg bg-white"
                       />
                     </div>
 
@@ -371,7 +461,7 @@ export const ProjectDetailsPage = () => {
                           onValueChange={(value) => setValue('status', value as any)}
                           disabled={isSubmitting}
                         >
-                          <SelectTrigger className="w-full bg-white">
+                          <SelectTrigger className="w-full rounded-lg bg-white">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
@@ -394,7 +484,7 @@ export const ProjectDetailsPage = () => {
                             placeholder="dd/mm/yyyy"
                             disabled
                             readOnly
-                            className="bg-white opacity-100!"
+                            className="rounded-lg bg-white opacity-100!"
                           />
                           <input type="hidden" {...register('start_date')} />
                           <Popover open={startDatePopover} onOpenChange={setStartDatePopover}>
@@ -430,7 +520,7 @@ export const ProjectDetailsPage = () => {
                             placeholder="dd/mm/yyyy"
                             disabled
                             readOnly
-                            className="bg-white opacity-100!"
+                            className="rounded-lg bg-white opacity-100!"
                           />
                           <input type="hidden" {...register('end_date')} />
                           <Popover open={endDatePopover} onOpenChange={setEndDatePopover}>
@@ -469,7 +559,7 @@ export const ProjectDetailsPage = () => {
                         type="button"
                         onClick={handleCancelEdit}
                         disabled={isSubmitting}
-                        className="text-ui-sm w-full flex-1 font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                        className="text-ui-sm w-full flex-1 rounded-lg font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                       >
                         Cancel
                       </Button>
@@ -477,7 +567,7 @@ export const ProjectDetailsPage = () => {
                         size={'lg'}
                         type="submit"
                         disabled={isSubmitting}
-                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+                        className="text-ui-sm focus-visible:ring-offset-background w-full flex-1 rounded-lg border border-blue-600 bg-blue-600 font-medium text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.98] active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
                       >
                         {isSubmitting ? 'Saving...' : 'Save Changes'}
                       </Button>

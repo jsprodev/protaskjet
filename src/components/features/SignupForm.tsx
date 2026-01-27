@@ -47,7 +47,7 @@ export const SignupForm = () => {
       // ✅ Better success handling
       setSuccessMessage('Account created! Check your email for verification.')
       reset()
-      //  Optional: Redirect after success
+      //  Optional: roseirect after success
       setTimeout(() => {
         navigate('/login')
       }, 3000)
@@ -55,20 +55,24 @@ export const SignupForm = () => {
   }
 
   return (
-    <div className="w-full max-w-md space-y-6 rounded-xl bg-white p-8 shadow-md">
-      <h1 className="text-2xl font-bold">Create Account</h1>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-ui-xl font-semibold text-neutral-900">Create your Account</h1>
+        <p className="text-ui-sm text-neutral-500">Its free and always will be.</p>
+      </div>
 
       {/* ✅ Success Message */}
       {successMessage && (
-        <Alert className="border-green-500 bg-green-50">
-          <AlertDescription className="text-green-700">{successMessage}</AlertDescription>
+        <Alert className="border-emerald-500 bg-emerald-50">
+          <AlertDescription className="text-emerald-700">{successMessage}</AlertDescription>
         </Alert>
       )}
 
       {/* ✅ Error Message */}
       {serverError && (
-        <Alert className="border-red-500 bg-red-50">
-          <AlertDescription className="text-red-700">{serverError}</AlertDescription>
+        <Alert className="rounded-lg border border-rose-200 bg-rose-50">
+          <AlertDescription className="text-ui-sm text-rose-700">{serverError}</AlertDescription>
         </Alert>
       )}
 
@@ -80,13 +84,17 @@ export const SignupForm = () => {
           <Input
             {...register('name')}
             id="name"
-            className={`h-10 ${errors.name ? 'border-red-500' : ''}`}
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
+              errors.name
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
             type="text"
             placeholder="Your name"
             autoComplete="name"
             disabled={isSubmitting}
           />
-          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
+          {errors.name && <p className="text-ui-xs text-rose-600">{errors.name.message}</p>}
         </div>
 
         <div>
@@ -96,13 +104,17 @@ export const SignupForm = () => {
           <Input
             {...register('email')}
             id="email"
-            className={`h-10 ${errors.email ? 'border-red-500' : ''}`}
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
+              errors.email
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
             type="email"
             placeholder="you@example.com"
             autoComplete="email"
             disabled={isSubmitting}
           />
-          {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
+          {errors.email && <p className="text-ui-xs text-rose-600">{errors.email.message}</p>}
         </div>
 
         <div>
@@ -112,13 +124,17 @@ export const SignupForm = () => {
           <Input
             {...register('password')}
             id="password"
-            className={`h-10 ${errors.password ? 'border-red-500' : ''}`}
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
+              errors.password
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
             type="password"
             placeholder="Password"
             autoComplete="new-password"
             disabled={isSubmitting}
           />
-          {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
+          {errors.password && <p className="text-ui-xs text-rose-600">{errors.password.message}</p>}
         </div>
 
         <div>
@@ -128,13 +144,17 @@ export const SignupForm = () => {
           <Input
             {...register('confirmPassword')}
             id="confirmPassword"
-            className={`h-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
+              errors.confirmPassword
+                ? 'border-rose-400 focus-visible:ring-rose-400'
+                : 'border-neutral-200 focus-visible:ring-neutral-300'
+            }`}
             type="password"
             placeholder="Confirm password"
             autoComplete="new-password"
             disabled={isSubmitting}
           />
-          {errors.confirmPassword && <p className="mt-1 text-sm text-red-500">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && <p className="text-ui-xs text-rose-600">{errors.confirmPassword.message}</p>}
         </div>
 
         <Button className="h-10 w-full" type="submit" disabled={isSubmitting}>
@@ -142,9 +162,9 @@ export const SignupForm = () => {
         </Button>
       </form>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-ui-sm text-center font-medium text-neutral-500">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-blue-600 hover:underline">
+        <Link to="/login" className="font-medium text-neutral-900 hover:underline">
           Log in
         </Link>
       </p>

@@ -186,7 +186,7 @@ export const TasksPage = () => {
           const status = row.getValue('status') as string
           return (
             <span
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium uppercase`}
+              className={`rounded-md px-2.5 py-1 text-[11px] font-medium uppercase`}
               style={{
                 backgroundColor: `color-mix(in oklab, var(--status-${status}) 12%, white)`,
                 color: `var(--status-${status})`,
@@ -239,7 +239,7 @@ export const TasksPage = () => {
               symbol = ' '
           }
           return (
-            <div className="text-ui-xs flex-inline flex items-center gap-2 font-medium text-neutral-700">
+            <div className="text-ui-xs flex-inline flex items-center gap-2 rounded-full border px-2.5 py-1 font-medium text-neutral-700">
               {symbol} {priority}
             </div>
           )
@@ -272,7 +272,7 @@ export const TasksPage = () => {
           const user = row.original.users as any
           const userName = Array.isArray(user) ? user[0]?.name : user?.name
           return (
-            <span className="text-ui-xs rounded-full border border-neutral-200 px-2.5 py-1 font-medium text-neutral-700">
+            <span className="text-ui-xs rounded-md border border-neutral-200 px-2.5 py-1 font-medium text-neutral-700">
               {userName || 'unassigned'}
             </span>
           )
@@ -295,7 +295,7 @@ export const TasksPage = () => {
                     <Button
                       variant="outline"
                       size={'icon-sm'}
-                      className="hover:border-blue-300 hover:bg-blue-50 active:scale-95"
+                      className="rounded-lg hover:border-blue-300 hover:bg-blue-50 active:scale-95"
                     >
                       <Eye className="size-4" />
                     </Button>
@@ -310,7 +310,7 @@ export const TasksPage = () => {
                     <Button
                       variant="outline"
                       size={'icon-sm'}
-                      className="hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
+                      className="rounded-lg hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
                     >
                       <Pencil className="size-4" />
                     </Button>
@@ -324,7 +324,7 @@ export const TasksPage = () => {
                   <Button
                     variant="outline"
                     size={'icon-sm'}
-                    className="hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
+                    className="rounded-lg hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
                     onClick={() => handleDelete(task.id)}
                   >
                     <Trash2 className="size-4" />
@@ -378,7 +378,7 @@ export const TasksPage = () => {
 
           <Button
             onClick={openCreateTask}
-            className="text-ui-sm focus-visible:ring-offset-background border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+            className="text-ui-sm focus-visible:ring-offset-background rounded-lg border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
           >
             <Plus className="mr-1 h-4 w-4" />
             New Task
@@ -390,7 +390,7 @@ export const TasksPage = () => {
         {/* TABLE */}
         {tasks.length ? (
           <div className="flex flex-col gap-8">
-            <div className="rounded-xl border border-neutral-200 bg-white p-5">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
               <div className="flex flex-wrap gap-4">
                 <Field className="min-w-[220px] flex-1 gap-1">
                   <FieldLabel>Search</FieldLabel>
@@ -398,7 +398,7 @@ export const TasksPage = () => {
                     placeholder="Title, project, user"
                     value={globalFilter}
                     onChange={(e) => setGlobalFilter(e.target.value)}
-                    className="bg-white"
+                    className="rounded-lg bg-white"
                   />
                 </Field>
 
@@ -410,7 +410,7 @@ export const TasksPage = () => {
                       table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value)
                     }
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="rounded-lg bg-white">
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
@@ -432,7 +432,7 @@ export const TasksPage = () => {
                       table.getColumn('priority')?.setFilterValue(value === 'all' ? undefined : value)
                     }
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="rounded-lg bg-white">
                       <SelectValue placeholder="All priorities" />
                     </SelectTrigger>
                     <SelectContent>
@@ -450,7 +450,7 @@ export const TasksPage = () => {
                   <Button
                     type="button"
                     variant="outline"
-                    className="text-ui-sm bg-white font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                    className="text-ui-sm rounded-lg bg-white font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                     onClick={() => {
                       table.getColumn('priority')?.setFilterValue('')
                       table.getColumn('status')?.setFilterValue('')
@@ -463,11 +463,11 @@ export const TasksPage = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+              <div className="w-full overflow-x-auto rounded-2xl border border-neutral-200 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
                 <Table className="table-fixed">
                   <TableHeader className="bg-neutral-50">
                     {table.getHeaderGroups().map((hg) => (
-                      <TableRow key={hg.id} className="border-b border-neutral-200">
+                      <TableRow key={hg.id} className="border-b border-neutral-200 hover:bg-neutral-50">
                         {hg.headers.map((header) => (
                           <TableHead key={header.id} className="px-4 py-3" style={{ width: `${header.getSize()}px` }}>
                             {flexRender(header.column.columnDef.header, header.getContext())}
@@ -519,7 +519,7 @@ export const TasksPage = () => {
                       size="sm"
                       onClick={() => table.previousPage()}
                       disabled={!table.getCanPreviousPage()}
-                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                      className="text-ui-sm rounded-lg font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                     >
                       Previous
                     </Button>
@@ -528,7 +528,7 @@ export const TasksPage = () => {
                       size="sm"
                       onClick={() => table.nextPage()}
                       disabled={!table.getCanNextPage()}
-                      className="text-ui-sm font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
+                      className="text-ui-sm rounded-lg font-normal hover:border-neutral-300 hover:bg-neutral-50 hover:text-neutral-700 active:scale-[0.98]"
                     >
                       Next
                     </Button>

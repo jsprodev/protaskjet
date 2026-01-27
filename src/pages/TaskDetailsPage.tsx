@@ -208,7 +208,7 @@ export const TaskDetailsPage = () => {
       />
 
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent className="w-full! bg-neutral-50 md:max-w-[60%]! lg:max-w-[50%]!">
+        <DrawerContent className="w-full! bg-neutral-100 md:max-w-[60%]! lg:max-w-[50%]!">
           <DrawerHeader className="border-b p-3">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-ui-lg! font-medium text-neutral-900">
@@ -228,20 +228,20 @@ export const TaskDetailsPage = () => {
               {!isEditing && !directEditTask ? (
                 <>
                   <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
-                    <div className="bg-card rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex items-start justify-between">
                         <h3 className="text-ui-md font-medium text-neutral-900">{task?.title}</h3>
                         <div
-                          className="text-ui-xs flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium uppercase"
+                          className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium uppercase"
                           style={{
                             backgroundColor: `color-mix(in oklab, var(--status-${task?.status}) 12%, white)`,
                             color: `var(--status-${task?.status})`,
                           }}
                         >
-                          <span
+                          {/* <span
                             className="h-1.5 w-1.5 rounded-full"
                             style={{ backgroundColor: `var(--status-${task?.status})` }}
-                          />
+                          /> */}
                           {task?.status}
                         </div>
                       </div>
@@ -252,7 +252,7 @@ export const TaskDetailsPage = () => {
                       </p>
                     </div>
 
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <User size={16} />
@@ -272,13 +272,11 @@ export const TaskDetailsPage = () => {
                           <ArrowUpWideNarrow size={16} />
                           Priority
                         </div>
-                        <div className="text-ui-xs max-w-fit rounded-full bg-neutral-100 px-3 py-1.5 font-medium text-neutral-700">
-                          {task?.priority}
-                        </div>
+                        <div className="text-ui-sm max-w-fit text-neutral-900">{task?.priority}</div>
                       </div>
                     </div>
 
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarIcon size={16} />
@@ -303,7 +301,7 @@ export const TaskDetailsPage = () => {
                     </div>
 
                     {/* Created At Updated At */}
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarClock size={16} />

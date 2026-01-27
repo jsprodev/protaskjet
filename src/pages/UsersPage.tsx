@@ -135,7 +135,7 @@ export const UsersPage = () => {
           )
         },
         cell: ({ row }) => (
-          <span className="rounded-full border bg-neutral-100 px-2 py-1 text-[11px] font-medium text-neutral-600 uppercase">
+          <span className="rounded-md border px-2 py-1 text-[11px] font-medium text-neutral-600 uppercase">
             {row.getValue('role')}
           </span>
         ),
@@ -302,7 +302,7 @@ export const UsersPage = () => {
 
         {users.length ? (
           <div className="flex flex-col gap-8">
-            <div className="rounded-xl border border-neutral-200 bg-white p-5">
+            <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
               <div className="flex flex-wrap gap-4">
                 <Field className="min-w-[220px] flex-1 gap-1">
                   <FieldLabel>Search:</FieldLabel>
@@ -342,11 +342,11 @@ export const UsersPage = () => {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white">
+              <div className="w-full overflow-x-auto rounded-2xl border border-neutral-200 bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
                 <Table className="table-fixed">
                   <TableHeader className="bg-neutral-50">
                     {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id} className="border-b border-neutral-200">
+                      <TableRow key={headerGroup.id} className="border-b border-neutral-200 hover:bg-neutral-50">
                         {headerGroup.headers.map((header) => {
                           return (
                             <TableHead key={header.id} className="px-4 py-3">

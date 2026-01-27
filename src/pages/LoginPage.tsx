@@ -5,7 +5,7 @@ export const LoginPage = () => {
     <div className="grid min-h-svh bg-neutral-100 lg:grid-cols-2">
       {/* Left: Infographic */}
       <div className="relative hidden overflow-hidden lg:block">
-        <div className="absolute inset-0 bg-neutral-100" />
+        <div className="absolute inset-0" />
 
         <img
           src="/images/infographics.png"

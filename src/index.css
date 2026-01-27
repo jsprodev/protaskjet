@@ -228,3 +228,14 @@
 button {
   cursor: pointer;
 }
+
+/* | Component        | Radius          |
+| ---------------- | --------------- |
+| Dashboard cards  | `rounded-2xl`   |
+| Modals / drawers | `rounded-2xl`   |
+| Inputs / buttons | `rounded-lg`    |
+| Chips / badges   | `rounded-md`    | */
+
+/* Status → rounded-md
+Priority → rounded-full
+Assignee → rounded-md (name pill) / rounded-full (avatar)  */

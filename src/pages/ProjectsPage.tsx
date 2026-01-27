@@ -60,7 +60,7 @@ export const ProjectsPage = () => {
 
           <Button
             onClick={openCreateProject}
-            className="text-ui-sm focus-visible:ring-offset-background border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
+            className="text-ui-sm focus-visible:ring-offset-background rounded-lg border border-blue-600 bg-blue-600 text-white transition-colors hover:border-blue-700 hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 active:border-blue-800 active:bg-blue-800 disabled:cursor-not-allowed disabled:border-blue-500 disabled:bg-blue-500 disabled:text-white/80"
           >
             <Plus className="size-4" strokeWidth={2.5} />
             New Project
@@ -92,13 +92,13 @@ export const ProjectsPage = () => {
           {projects.map((project) => (
             <div
               key={project.id}
-              className="relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-xl hover:shadow-neutral-900/10"
+              className="relative flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-[box-shadow,border-color] duration-200 hover:border-neutral-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.08)]"
             >
               {/* Accent Bar */}
               <div
                 className="h-0.5"
                 style={{
-                  backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 70%, white)`,
+                  backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 100%, white)`,
                 }}
               />
 
@@ -114,7 +114,7 @@ export const ProjectsPage = () => {
                 <h2 className="text-ui-md min-w-0 truncate font-medium text-neutral-900">{project.name}</h2>
 
                 <div
-                  className="flex items-center justify-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium whitespace-nowrap uppercase"
+                  className="flex items-center justify-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium whitespace-nowrap uppercase"
                   style={{
                     backgroundColor: `color-mix(in oklab, var(--status-${project.status}) 12%, white)`,
                     color: `var(--status-${project.status})`,
@@ -197,7 +197,7 @@ export const ProjectsPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-ui-sm w-full gap-2 hover:border-blue-300 hover:bg-blue-50 active:scale-95"
+                    className="text-ui-sm w-full gap-2 rounded-lg hover:border-blue-300 hover:bg-blue-50 active:scale-95"
                     style={{ paddingBlock: 'var(--space-button-y)' }}
                   >
                     <Eye size={15} />
@@ -212,7 +212,7 @@ export const ProjectsPage = () => {
                         asChild
                         variant="outline"
                         size="icon-sm"
-                        className="hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
+                        className="rounded-lg hover:border-amber-300 hover:bg-amber-50 hover:text-neutral-700 active:scale-95"
                         style={{ paddingBlock: 'var(--space-button-y)' }}
                       >
                         <span>
@@ -229,7 +229,7 @@ export const ProjectsPage = () => {
                     <Button
                       variant="outline"
                       size="icon-sm"
-                      className="hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
+                      className="rounded-lg hover:border-red-300 hover:bg-red-50 hover:text-neutral-700 active:scale-95"
                       style={{ paddingBlock: 'var(--space-button-y)' }}
                       onClick={() => handleDelete(project.id)}
                     >

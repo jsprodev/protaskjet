@@ -189,7 +189,7 @@ export const UserDetailsPage = () => {
       />
 
       <Drawer direction="right" open={openDrawer} onOpenChange={(open) => !open && handleClose()}>
-        <DrawerContent className="w-full! bg-neutral-50 md:max-w-[40%]! lg:max-w-[35%]!">
+        <DrawerContent className="w-full! bg-neutral-100 md:max-w-[50%]! lg:max-w-[37%]!">
           <DrawerHeader className="border-b p-3">
             <div className="flex items-center justify-between">
               <DrawerTitle className="text-ui-lg! font-medium text-neutral-900">
@@ -211,18 +211,18 @@ export const UserDetailsPage = () => {
                   {/* VIEW MODE */}
                   <div className="h-[calc(100vh-140px)] space-y-4 overflow-y-auto p-4 md:space-y-6 md:p-6">
                     {/* PROFILE CARD */}
-                    <div className="bg-card shadow-sms mr-auto ml-auto flex max-w-xs flex-col items-center space-y-4 rounded-2xl p-4 shadow-xl shadow-slate-900/10 md:p-5">
+                    <div className="mr-auto ml-auto flex max-w-xs flex-col items-center space-y-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex items-center">
                         <img
                           src={user?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name}`}
                           alt={user?.name}
-                          className="size-32 rounded-xl border border-neutral-200 object-cover"
+                          className="size-32 rounded-full border object-cover"
                         />
                       </div>
-                      <div className="flex flex-1 flex-col items-center space-y-0">
+                      <div className="flex flex-1 flex-col items-center space-y-1">
                         <div className="flex items-center space-x-4">
                           <h2 className="text-ui-sm font-medium text-neutral-900 capitalize">{user?.name}</h2>
-                          <span className="rounded-full border bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600 uppercase">
+                          <span className="font-mediums rounded-md border px-2 py-1 text-[11px] font-medium text-neutral-600 uppercase">
                             {user?.role}
                           </span>
                         </div>
@@ -231,7 +231,7 @@ export const UserDetailsPage = () => {
                     </div>
 
                     {/* Created At Updated At */}
-                    <div className="bg-card flex items-center justify-between space-x-4 rounded-2xl p-4 shadow-sm md:p-5">
+                    <div className="flex items-center justify-between space-x-4 rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] md:p-5">
                       <div className="flex-1 space-y-2">
                         <div className="text-ui-xs flex items-center gap-1.5 font-medium text-neutral-500 uppercase">
                           <CalendarClock size={16} />

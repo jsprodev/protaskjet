@@ -43,8 +43,8 @@ export const LoginForm = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-ui-xl font-semibold text-neutral-900">Welcome</h1>
-        <p className="text-ui-sm text-neutral-500">Sign in to manage your projects and tasks</p>
+        <h1 className="text-ui-xl font-semibold text-neutral-900">Log in to you Account</h1>
+        <p className="text-ui-sm text-neutral-500">Welcome back. Log in to manage your projects and tasks.</p>
       </div>
 
       {/* Error */}
@@ -69,7 +69,7 @@ export const LoginForm = () => {
             placeholder="you@example.com"
             autoComplete="email"
             disabled={isSubmitting}
-            className={`text-ui-sm h-10 rounded-lg ${
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
               errors.email
                 ? 'border-rose-400 focus-visible:ring-rose-400'
                 : 'border-neutral-200 focus-visible:ring-neutral-300'
@@ -92,7 +92,7 @@ export const LoginForm = () => {
             placeholder="••••••••"
             autoComplete="current-password"
             disabled={isSubmitting}
-            className={`text-ui-sm h-10 rounded-lg ${
+            className={`text-ui-sm h-10 rounded-lg bg-white ${
               errors.password
                 ? 'border-rose-400 focus-visible:ring-rose-400'
                 : 'border-neutral-200 focus-visible:ring-neutral-300'
@@ -106,14 +106,14 @@ export const LoginForm = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="text-ui-sm h-10 w-full rounded-lg bg-blue-500 font-medium text-white transition-all hover:bg-blue-600 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-blue-300/40 focus-visible:outline-none active:scale-[0.99] active:bg-blue-600 disabled:opacity-60 disabled:hover:shadow-none"
+          className="text-ui-sm h-10 w-full rounded-lg font-medium text-white transition-all hover:shadow-sm focus-visible:ring-2 focus-visible:outline-none active:scale-[0.99] disabled:opacity-60 disabled:hover:shadow-none"
         >
           {isSubmitting ? 'Signing in…' : 'Sign in'}
         </Button>
       </form>
 
       {/* Footer */}
-      <p className="text-ui-xs text-center text-neutral-500">
+      <p className="text-ui-sm text-center font-medium text-neutral-500">
         Don’t have an account?{' '}
         <Link to="/signup" className="font-medium text-neutral-900 hover:underline">
           Create one
