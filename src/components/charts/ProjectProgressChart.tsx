@@ -18,19 +18,19 @@ export const ProjectProgressChart = () => {
     })
     .sort((a, b) => b.completion - a.completion)
 
-  const getProgressColor = (percent: number) => {
-    // if (percent >= 75) return 'bg-green-500'
-    // if (percent >= 50) return 'bg-blue-500'
-    // if (percent >= 25) return 'bg-orange-500'
-    return 'bg-green-500'
-  }
+  // const getProgressColor = (percent: number) => {
+  //   // if (percent >= 75) return 'bg-green-500'
+  //   // if (percent >= 50) return 'bg-blue-500'
+  //   // if (percent >= 25) return 'bg-orange-500'
+  //   return 'bg-green-500'
+  // }
 
-  const getProgressBg = (percent: number) => {
-    // if (percent >= 75) return 'bg-green-50'
-    // if (percent >= 50) return 'bg-blue-50'
-    // if (percent >= 25) return 'bg-orange-50'
-    return 'bg-green-50'
-  }
+  // const getProgressBg = (percent: number) => {
+  //   // if (percent >= 75) return 'bg-green-50'
+  //   // if (percent >= 50) return 'bg-blue-50'
+  //   // if (percent >= 25) return 'bg-orange-50'
+  //   return 'bg-green-50'
+  // }
 
   return (
     <div className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-[box-shadow,border-color] duration-200 hover:border-neutral-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.08)]">
@@ -63,7 +63,7 @@ export const ProjectProgressChart = () => {
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${getProgressColor(project.completion)}`}
+                  className={`h-full rounded-full bg-green-500 transition-all duration-500`}
                   style={{ width: `${project.completion}%` }}
                 />
               </div>

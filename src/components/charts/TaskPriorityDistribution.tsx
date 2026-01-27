@@ -8,7 +8,7 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart'
 import { useTasks } from '@/context/TasksContext'
-import { AlertCircle, ListChevronsUpDown } from 'lucide-react'
+import { ListChevronsUpDown } from 'lucide-react'
 
 export const TaskPriorityDistribution = () => {
   const { tasks } = useTasks()
@@ -29,7 +29,7 @@ export const TaskPriorityDistribution = () => {
   const totalTasks = tasks.length
 
   const chartConfig = {
-    count: { label: 'Tasks' },
+    count: { label: 'Tasks', color: '#06b6d4' },
 
     low: {
       label: 'Low',
@@ -54,9 +54,9 @@ export const TaskPriorityDistribution = () => {
 
   const getPriorityColor = (priority: string) => chartConfig[priority as keyof typeof chartConfig]?.color || '#06b6d4'
 
-  const urgentCount = tasksByPriority['urgent'] || 0
-  const highCount = tasksByPriority['high'] || 0
-  const criticalTasks = urgentCount + highCount
+  // const urgentCount = tasksByPriority['urgent'] || 0
+  // const highCount = tasksByPriority['high'] || 0
+  // const criticalTasks = urgentCount + highCount
 
   return (
     <div className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-[box-shadow,border-color] duration-200 hover:border-neutral-300 hover:shadow-[0_6px_24px_rgba(0,0,0,0.08)]">

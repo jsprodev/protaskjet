@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
-import { Loader2, AlertCircleIcon, Upload, X } from 'lucide-react'
+import { Loader2, AlertCircleIcon, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,7 +31,6 @@ export const CreateUserForm = ({ onSuccess }: CreateUserFormProps) => {
     formState: { errors, isSubmitting },
     setValue,
     reset,
-    watch,
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {

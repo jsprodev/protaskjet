@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
-import type { Task, TaskWithDetails } from '@/types/database.types'
+import type { TaskWithDetails } from '@/types/database.types'
 import type { CreateTaskInput, UpdateTaskInput } from '@/schemas/task.schema'
 
 export const tasksApi = {
@@ -29,7 +29,7 @@ export const tasksApi = {
       throw new Error(error.message || 'Failed to create task')
     }
     console.log(task)
-    return task as Task
+    return task as TaskWithDetails
   },
 
   // Get all tasks with relations (project and assigned user)

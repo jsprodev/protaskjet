@@ -28,6 +28,7 @@ export const TasksOverviewByStatus = () => {
   const chartConfig = {
     count: {
       label: 'Count',
+      color: '#06b6d4',
     },
     todo: {
       label: 'To Do',

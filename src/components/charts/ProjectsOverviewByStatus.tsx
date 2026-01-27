@@ -28,6 +28,7 @@ export const ProjectsOverviewByStatus = () => {
   const chartConfig = {
     count: {
       label: 'Count',
+      color: '#06b6d4',
     },
     active: {
       label: 'Active',

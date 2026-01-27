@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { AlertCircle, RefreshCw, Home } from 'lucide-react'
 
 // ========== ERROR BOUNDARY COMPONENT ==========
@@ -23,7 +23,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     }
   }
 
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
+  static getDerivedStateFromError(): Partial<ErrorBoundaryState> {
     return { hasError: true }
   }
 
@@ -35,7 +35,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
     this.setState({
       error,
-      errorInfo: errorInfo.componentStack,
+      errorInfo: errorInfo.componentStack || null,
     })
   }
 
@@ -121,7 +121,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({ error, erro
 
 // ========== ROUTE ERROR ELEMENT (for React Router errorElement prop) ==========
 export const RouteErrorElement: React.FC = () => {
-  const [error, setError] = useState<Error | null>(null)
+  const [, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     // This captures errors from route loaders/actions
