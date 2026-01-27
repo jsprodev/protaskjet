@@ -47,7 +47,6 @@ export const SignupForm = () => {
       // ✅ Better success handling
       setSuccessMessage('Account created! Check your email for verification.')
       reset()
-      //  Optional: roseirect after success
       setTimeout(() => {
         navigate('/login')
       }, 3000)

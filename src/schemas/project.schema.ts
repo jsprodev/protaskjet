@@ -8,4 +8,4 @@ export const createProjectSchema = z.object({
   end_date: z.string().optional(),
 })
 
-export type CreateProjectInput = z.infer<typeof createProjectSchema>
+export type CreateProjectInput = z.input<typeof createProjectSchema>

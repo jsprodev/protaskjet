@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader } from '@/components/ui/loader'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Field, FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
   Drawer,
@@ -14,11 +13,11 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer'
-import { X, SquarePen, CalendarClock, Trash2, Upload } from 'lucide-react'
+import { X, SquarePen, CalendarClock, Trash2 } from 'lucide-react'
 import type { User } from '@/types/database.types'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { usersApi } from '@/services/api/users.api'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updateUserSchema, type UpdateUserInput } from '@/schemas/user.schema'
@@ -56,28 +55,31 @@ export const UserDetailsPage = () => {
 
   const selectedRole = watch('role')
 
-  const getUser = async (id: string) => {
-    try {
-      const data = await usersApi.getById(id)
-      setUser(data)
+  const getUser = useCallback(
+    async (id: string) => {
+      try {
+        const data = await usersApi.getById(id)
+        setUser(data)
 
-      reset({
-        name: data.name,
-        email: data.email,
-        role: data.role,
-      })
-    } catch (err) {
-      console.log(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+        reset({
+          name: data.name,
+          email: data.email,
+          role: data.role,
+        })
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [reset]
+  )
 
   useEffect(() => {
     if (userId) {
       getUser(userId)
     }
-  }, [userId])
+  }, [userId, getUser])
 
   useEffect(() => {
     if (directEditUser && !isEditing) {
@@ -390,10 +392,10 @@ export const UserDetailsPage = () => {
                         <Label htmlFor="role">Role</Label>
                         <Select
                           value={selectedRole || ''}
-                          onValueChange={(value) => setValue('role', value as any)}
+                          onValueChange={(value) => setValue('role', value as never)}
                           disabled={isSubmitting}
                         >
-                          <SelectTrigger className="w-full bg-white">
+                          <SelectTrigger className="w-full bg-white" id="for">
                             <SelectValue placeholder="Select role" />
                           </SelectTrigger>
                           <SelectContent>

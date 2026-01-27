@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from 'react'
 import {
   ChevronsUpDown,
@@ -344,7 +345,7 @@ export const TasksPage = () => {
     data: tasks,
     columns,
     filterFns: { fuzzy: fuzzyFilter },
-    globalFilterFn: 'fuzzy',
+    globalFilterFn: fuzzyFilter,
     state: { sorting, columnFilters, globalFilter },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

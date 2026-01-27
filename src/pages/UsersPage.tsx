@@ -230,10 +230,7 @@ export const UsersPage = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: 'fuzzy',
-    filterFns: {
-      fuzzy: fuzzyFilter,
-    },
+    globalFilterFn: fuzzyFilter,
     state: {
       sorting,
       columnFilters,

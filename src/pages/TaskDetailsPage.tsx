@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -20,7 +21,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { tasksApi } from '@/services/api/tasks.api'
 import { projectsApi } from '@/services/api/projects.api'
 import { usersApi } from '@/services/api/users.api'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updateTaskSchema, type UpdateTaskInput } from '@/schemas/task.schema'
@@ -39,7 +40,7 @@ export const TaskDetailsPage = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [users, setUsers] = useState<any[]>([])
-  const [projects, setProjects] = useState<any[]>([])
+  const [, setProjects] = useState<any[]>([])
   const { updateTask, deleteTask: deleteTaskFromContext } = useTasks()
   const { taskId } = useParams<{ taskId: string }>()
   const navigate = useNavigate()
@@ -65,42 +66,45 @@ export const TaskDetailsPage = () => {
   const selectedPriority = watch('priority')
   const selectedAssignedTo = watch('assigned_to')
 
-  const getTask = async (id: string) => {
-    try {
-      const data = await tasksApi.getById(id)
-      setTask(data)
+  const getTask = useCallback(
+    async (id: string) => {
+      try {
+        const data = await tasksApi.getById(id)
+        setTask(data)
 
-      // Parse ISO date from database
-      const parsedDueDate = data.due_date ? parseISO(data.due_date) : undefined
-      setDueDate(parsedDueDate)
+        // Parse ISO date from database
+        const parsedDueDate = data.due_date ? parseISO(data.due_date) : undefined
+        setDueDate(parsedDueDate)
 
-      // Set form values
-      reset({
-        title: data.title,
-        description: data.description || '',
-        status: data.status,
-        priority: data.priority,
-        assigned_to: data.assigned_to || undefined,
-        due_date: data.due_date || '',
-      })
+        // Set form values
+        reset({
+          title: data.title,
+          description: data.description || '',
+          status: data.status,
+          priority: data.priority,
+          assigned_to: data.assigned_to || undefined,
+          due_date: data.due_date || '',
+        })
 
-      // Load users and projects
-      const usersData = await usersApi.getAll()
-      const projectsData = await projectsApi.getAll()
-      setUsers(usersData)
-      setProjects(projectsData)
-    } catch (err) {
-      console.log(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+        // Load users and projects
+        const usersData = await usersApi.getAll()
+        const projectsData = await projectsApi.getAll()
+        setUsers(usersData)
+        setProjects(projectsData)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [reset]
+  )
 
   useEffect(() => {
     if (taskId) {
       getTask(taskId)
     }
-  }, [taskId])
+  }, [taskId, getTask])
 
   const handleClose = () => {
     setOpenDrawer(false)

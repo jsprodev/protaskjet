@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -20,7 +21,6 @@ import {
   CalendarClock,
   Trash2,
   CalendarIcon,
-  CheckCircle2,
   Circle,
   ArrowDown,
   ArrowRight,
@@ -31,7 +31,7 @@ import {
 import type { Project } from '@/types/database.types'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { projectsApi } from '@/services/api/projects.api'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createProjectSchema, type CreateProjectInput } from '@/schemas/project.schema'
@@ -69,6 +69,9 @@ export const ProjectDetailsPage = () => {
     reset,
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+      status: 'active', // Add this!
+    },
   })
 
   // Get tasks for this project
@@ -76,33 +79,61 @@ export const ProjectDetailsPage = () => {
   const completedTasks = projectTasks.filter((task) => task.status === 'done')
 
   // Fetch project by id
-  const getProject = async (id: string) => {
-    try {
-      const data = await projectsApi.getById(id)
-      setProject(data)
+  // const getProject = async (id: string) => {
+  //   try {
+  //     const data = await projectsApi.getById(id)
+  //     setProject(data)
 
-      const parsedStartDate = data.start_date ? parseISO(data.start_date) : undefined
-      const parsedEndDate = data.end_date ? parseISO(data.end_date) : undefined
-      setStartDate(parsedStartDate)
-      setEndDate(parsedEndDate)
+  //     const parsedStartDate = data.start_date ? parseISO(data.start_date) : undefined
+  //     const parsedEndDate = data.end_date ? parseISO(data.end_date) : undefined
+  //     setStartDate(parsedStartDate)
+  //     setEndDate(parsedEndDate)
 
-      reset({
-        name: data.name,
-        description: data.description || '',
-        status: data.status,
-        start_date: data.start_date || '',
-        end_date: data.end_date || '',
-      })
-    } catch (err) {
-      console.log(err)
-    } finally {
-      setLoading(false)
-    }
-  }
+  //     reset({
+  //       name: data.name,
+  //       description: data.description || '',
+  //       status: data.status,
+  //       start_date: data.start_date || '',
+  //       end_date: data.end_date || '',
+  //     })
+  //   } catch (err) {
+  //     console.log(err)
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
+
+  // Wrap getProject in useCallback
+  const getProject = useCallback(
+    async (id: string) => {
+      try {
+        const data = await projectsApi.getById(id)
+        setProject(data)
+
+        const parsedStartDate = data.start_date ? parseISO(data.start_date) : undefined
+        const parsedEndDate = data.end_date ? parseISO(data.end_date) : undefined
+        setStartDate(parsedStartDate)
+        setEndDate(parsedEndDate)
+
+        reset({
+          name: data.name,
+          description: data.description || '',
+          status: data.status,
+          start_date: data.start_date || '',
+          end_date: data.end_date || '',
+        })
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [reset]
+  )
 
   useEffect(() => {
     if (id) getProject(id)
-  }, [id])
+  }, [id, getProject])
 
   const handleClose = () => {
     setOpenDrawer(false)
