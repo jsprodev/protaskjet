@@ -1,22 +1,25 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginSchema, type LoginInput } from '@/schemas/auth'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuth } from '@/hooks/useAuth'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export const LoginForm = () => {
   const navigate = useNavigate()
   const { signIn } = useAuth()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [rememberMe, setRememberMe] = useState(false)
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -26,8 +29,24 @@ export const LoginForm = () => {
     },
   })
 
+  // Load saved email on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberedEmail')
+    if (savedEmail) {
+      setValue('email', savedEmail)
+      setRememberMe(true)
+    }
+  }, [setValue])
+
   const onSubmit = async (data: LoginInput) => {
     setServerError(null)
+
+    // Save or remove email based on "Remember Me" checkbox
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', data.email)
+    } else {
+      localStorage.removeItem('rememberedEmail')
+    }
 
     const { email, password } = data
     const { error } = await signIn(email, password)
@@ -89,7 +108,7 @@ export const LoginForm = () => {
             {...register('password')}
             id="password"
             type="password"
-            placeholder="••••••••"
+            placeholder="password"
             autoComplete="current-password"
             disabled={isSubmitting}
             className={`text-ui-sm h-10 rounded-lg bg-white ${
@@ -100,6 +119,19 @@ export const LoginForm = () => {
           />
 
           {errors.password && <p className="text-ui-xs text-rose-600">{errors.password.message}</p>}
+        </div>
+
+        {/* Remember Me */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+            id="remember"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+          />
+          <Label htmlFor="remember" className="text-ui-sm cursor-pointer text-neutral-700">
+            Remember me
+          </Label>
         </div>
 
         {/* CTA */}
@@ -114,7 +146,7 @@ export const LoginForm = () => {
 
       {/* Footer */}
       <p className="text-ui-sm text-center font-medium text-neutral-500">
-        Don’t have an account?{' '}
+        Don't have an account?{' '}
         <Link to="/signup" className="font-medium text-blue-600 hover:underline">
           Create one
         </Link>
